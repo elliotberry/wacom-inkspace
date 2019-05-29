@@ -1,0 +1,110 @@
+package wacom.cloud.diffsync.format;
+
+option optimize_for = LITE_RUNTIME;
+
+message TagEdit
+{
+    enum Type
+    {
+        TAG_DELETE = -1;
+        TAG_ADD    = 1;
+    }
+
+    required string tag = 1;
+    required Type type = 2;
+}
+
+message AttrEdit
+{
+    enum Type
+    {
+        ATTR_DELETE = -1;
+        ATTR_ADD    = 1;
+    }
+
+    required string key = 1;
+    optional string value = 2;
+    required Type type = 3;
+}
+
+message Payload
+{
+    enum Type
+    {
+        SEQUENCE = 1;
+        STROKE   = 2;
+    }
+
+    required Type type = 1;
+    required bytes content = 2;
+}
+
+message NodeEdit
+{
+    enum Type
+    {
+        SES_DELETE = -1;
+        SES_COMMON = 0;
+        SES_ADD    = 1;
+    }
+
+    required int32 beforeIndex = 1; // index of prev sequence
+    required int32 afterIndex = 2;  // index of after sequence
+    required Type type = 3;         // type of edit(Add, Delete, Common)
+
+    required Payload payload = 4;
+    repeated TagEdit tagEdits = 5;
+    repeated AttrEdit attrEdits = 6;
+}
+
+message SequenceEdit
+{
+    required int64 docLocalVersion = 1;
+    required fixed64 docChecksum = 2;
+
+    repeated NodeEdit nodeEdits = 3;
+}
+
+message SequenceEditList
+{
+    required uint64 docRemoteVersion = 1;
+    repeated SequenceEdit sequenceEdits = 2;
+}
+
+
+//===========
+message KeyValuePair
+{
+    required string key = 1;
+    required string value = 2;
+}
+
+message Node
+{
+    required Payload payload = 1;
+    repeated string tags = 2;
+    repeated KeyValuePair attribs = 3;
+}
+
+message Document
+{
+    repeated Node main = 1;
+
+    repeated Node shadow = 2;
+
+    required int64 shadowLocalVersion = 3;
+    required int64 shadowRemoteVersion = 4;
+
+    repeated Node backupShadow = 5;
+    required int64 backupShadowLocalVersion = 6;
+
+    required SequenceEditList pendingEdits = 7;
+
+    required bool shadowSameAsMain = 8;
+    required bool backupSameAsShadow = 9;
+}
+
+message PayloadSequence
+{
+    repeated Payload seq = 1;
+}

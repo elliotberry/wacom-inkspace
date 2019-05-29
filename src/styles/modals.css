@@ -1,0 +1,108 @@
+.waiting-loader {display: inline-block; margin-right: 20px; vertical-align: middle;}
+.waiting-details {display: inline-block;}
+
+.dialog-wrapper {position: absolute; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.2); z-index: 1000;}
+.dialog {position: relative; min-width: 450px; max-width: 90%; max-height: 90%; color: #000; background-color: #fff; border-radius: 10px; z-index: 1001;}
+
+.modal.dialog {
+	width: 600px;
+	height: 600px;
+}
+
+.dialog .waiting-loader {margin-right: 5px;}
+.dialog .waiting-details {font-size: 14px;}
+
+/* X button */
+.dialog .button.close {position: absolute; top: 20px; right: 25px;}
+
+.dialog-content {
+	/*overflow: hidden;*/
+	padding: 40px 65px 22px 65px;
+}
+
+.modal .dialog-content {
+	padding: 50px 80px 0 80px;
+}
+
+.dialog-content h1 {
+	margin: 0;
+	padding: 0;
+	font-size: 25px;
+	font-weight: 400;
+}
+
+.modal .dialog-content h1 {
+	margin: 60px 0 23px 0;
+	color: #333333;
+	font-weight: 500;
+}
+
+.dialog-content ul li {
+	font-size: 14px;
+	line-height: 24px;
+	padding-left: 25px;
+	color: #666666;
+}
+
+.dialog-content ol {font-size: 14px; padding: 0; margin: 28px 0 20px;}
+.dialog-content ol li {list-style-position: inside; list-style-type: decimal; color: #666666;}
+
+.dialog-content ol li a {
+	color: #00a7db;
+}
+
+.dialog-content p {
+	font-size: 14px;
+	margin: 22px 0 40px 0;
+	color: #999999;
+}
+
+.modal .dialog-content p {
+	color: #666666;
+}
+
+.modal .dialog-content img {
+	max-height: 244px;
+}
+
+.dialog .navigation-dots {position: absolute; left: 0; bottom: -30px; width: 100%;}
+.dialog .navigation-dots ul {padding: 0;}
+.dialog .navigation-dots ul svg {display: block;}
+
+.Tutorial .modal .dialog-content svg {width: 100%; height: 100%;}
+
+.SelectItem .dialog {width: 450px; height: 435px; max-width: 550px; min-height: 435px; padding: 40px 65px 22px 65px; box-sizing: border-box;}
+.SelectItem .dialog .dialog-content {position: relative; height: 100%; padding: 0;}
+.SelectItem .dialog .dialog-content .action-bar {position: absolute; left: 0; bottom: 22px; width: 100%; padding-top: 22px; border-top: 1px solid #dcdcdc;}
+.SelectItem .dialog .dialog-content ul {margin-top: 42px; padding: 22px 0 0 0; border-top: 1px solid #c5c5c5;}
+.SelectItem .dialog i {position: relative;}
+
+.m-right {
+	display: none;
+}
+
+.m-right.shown {
+	display: block;
+}
+
+.SelectItem .dialog .dialog-content ul li {
+	display: flex;
+	flex-flow: row nowrap;
+	justify-content: space-between;
+	align-items: stretch;
+	align-content: stretch;
+	height: 30px;
+	line-height: 30px;
+	padding-left: 0;
+	margin-bottom: 15px;
+}
+
+.SelectItem .dialog .dialog-content ul li:hover {cursor: pointer;}
+.SelectItem .dialog ul li .m-left.active {font-weight: 700;}
+.SelectItem .dialog ul li .m-right img {width: 30px; height: 30px;}
+.SelectItem .dialog .dialog-content svg {width: 30px; height: 30px;}
+
+.ExportingNote .dialog h1 {text-align: center;}
+
+.WhatsNew .modal .dialog-content h1 {color: #00aeef;}
+.WhatsNew .modal .dialog-content .action-bar .btn {background-color: #00aeef;}

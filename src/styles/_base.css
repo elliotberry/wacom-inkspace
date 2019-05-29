@@ -1,0 +1,26 @@
+/* Default Colors */
+@value VeryLightGrey: #dcdcdc;
+@value LightGrey: #c5c5c5;
+@value MediumLightGrey: #999999;
+@value MediumGrey: #666666;
+@value MediumDarkGrey: #4c4c4c;
+@value DarkGrey: #333333;
+@value InkspaceBlue: #00a7db;
+@value ThumbColor: #f5f5f5;
+@value White: #ffffff;
+@value Black: #000000;
+
+/* Default Fonts */
+@value TitleFont: 'Segoe UI', 'Helvetica', sans-serif;
+@value ParagraphFont: 'Segoe UI', 'Helvetica', sans-serif;
+
+/* Default Font Weights */
+@value Light: 200;
+@value Regular: 400;
+@value Bold: 700;
+
+/*@value colors: "./base.css";*/
+/*@value DarkGrey, Black, MediumLightGrey, LightGrey from colors;*/
+
+/*@value fonts: "./base.css";*/
+/*@value Light, Regular, Bold, TitleFont from fonts;*/

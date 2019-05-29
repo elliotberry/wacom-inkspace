@@ -1,0 +1,44 @@
+.btn {
+	display: inline-block;
+	min-width: 102px;
+	height: 40px;
+	line-height: 40px;
+	padding: 0 20px;
+	border-radius: 5px;
+	color: #fff;
+	background-color: #333333;
+	text-align: center;
+}
+
+.btn:hover {opacity: 0.85;}
+.btn:active {opacity: 0.75;}
+.btn.disabled {opacity: 0.6; pointer-events: none;}
+
+.btn.cancel {
+	font-size: 15px;
+	font-weight: 700;
+    padding: 0;
+    min-width: auto;
+    color: black;
+    background: none;
+}
+
+.action-bar {
+	overflow: hidden;
+	/*clear: both;*/
+	-ms-user-select: none;
+	user-select: none;
+}
+
+.action-bar a {margin-left: 32px;}
+.action-bar a:first-child {margin-left: 0;}
+
+.action-bar .pull-right a {display: inline-block;}
+
+.modal .action-bar {
+	padding-bottom: 40px;;
+}
+
+.modal .action-bar .btn {
+	padding: 0;
+}

@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>Inkspace</title>
+
+		<script type="text/javascript" src="../../scripts/js.ext.js"></script>
+
+		<script type="text/javascript">
+			const NUMBERS_TO_TEXT = [null, null, "two", "three", "four", "five"];
+
+			let splitPos = null;
+
+			function begin(e) {
+				splitPos = e.clientX;
+			}
+
+			function move(e) {
+				if (!splitPos) return;
+
+				let delta = e.clientX - splitPos;
+				applyUI(delta);
+
+				splitPos = e.clientX;
+			}
+
+			function applyUI(delta) {
+				let change = {};
+
+				let notes = document.querySelector(".notes");
+				let content = document.querySelector(".notes .content")
+				let preview = document.querySelector(".preview");
+
+				let width = notes.offsetWidth + delta;
+				width = Math.max(width, notes.getMathStyle("min-width"));
+				width = Math.min(width, notes.getMathStyle("max-width"));
+
+				notes.style.width = width + "px";
+				preview.style.width = (window.innerWidth - width) + "px";
+				preview.style.left = width + "px";
+
+				let fontSize = (width - (content.getMathStyle("margin-left") + content.getMathStyle("margin-right")));
+				let columns = 0;
+
+				if (width < 514)
+					columns = 2;
+				else if (width >= 514 && width < 634)
+					columns = 3;
+				else if (width >= 634 && width < 754)
+					columns = 4;
+				else if (width >= 754)
+					columns = 5;
+
+				change.notesWidth = width;
+				change.previewWidth = window.innerWidth - width;
+				change.previewLeft = width;
+				change.columns = columns;
+				change.fontSize = fontSize;
+				change.grids = [];
+
+				Array.from(document.querySelectorAll(".grid")).forEach(grid => {
+					grid.className = "grid " + NUMBERS_TO_TEXT[columns] + "-columms";
+					grid.style.fontSize = fontSize + "px";
+
+					let items = grid.querySelectorAll(".item");
+					let rows = Math.floor(items.length / columns) + (items.length % columns ? 1 : 0);
+					let height = rows * (items[0].offsetHeight + items[0].getMathStyle("margin-bottom"));
+
+					grid.style.height = height + "px";
+
+					change.grids.push(height);
+				});
+
+				// update state
+				console.log(JSON.stringify(change))
+			}
+
+			function end(e) {
+				splitPos = null;
+			}
+
+			document.onmousemove = move;
+			document.onmouseup = end;
+
+			window.onload = () => {
+				applyUI(0)
+			}
+
+			window.onresize = () => {
+				applyUI(0)
+			}
+		</script>
+
+		<style type="text/css">
+			body {padding: 0; margin: 0; border: 0;}
+			.library {position: relative; height: 100vh; background-color: lightblue;}
+			.notes {position: absolute; width: 514px; height: 100%; min-width: 394px; max-width: 1200px; background-color: lime;}
+			.splitter {position: absolute; top: 0; right: 0; width: 5px; height: 100%; cursor: ew-resize; background-color: red;}
+			.preview {position: absolute; left: 514px; width: calc(100vw - 514px); height: 100%; background-color: orange;}
+
+			.container {height: 100%;}
+			.menu {height: 66px; background-color: beige;}
+			.content {height: calc(100vh - 66px);}
+
+			.notes .content {overflow-x: hidden; margin: 0 78px;}
+			.notes .content .item {float: left; position: relative; margin-bottom: 55px;}
+
+			.notes .content .two-columms .item {width: 45.5%; padding-top: 45.5%; margin-right: 9%;}
+			.notes .content .two-columms .item:nth-child(2n) {margin-right: 0;}
+			.notes .content .two-columms .thumb-title {font-size: 5.463%;}
+
+			.notes .content .three-columms .item {width: 29.5%; padding-top: 29.5%; margin-right: 5.75%;}
+			.notes .content .three-columms .item:nth-child(3n) {margin-right: 0;}
+			.notes .content .three-columms .thumb-title {font-size: 3.632%;}
+
+			.notes .content .four-columms .item {width: 21.7%; padding-top: 21.7%; margin-right: 4.4%;}
+			.notes .content .four-columms .item:nth-child(4n) {margin-right: 0;}
+			.notes .content .four-columms .thumb-title {font-size: 2.72%;}
+
+			.notes .content .five-columms .item {width: 17.2%; padding-top: 17.2%; margin-right: 3.5%;}
+			.notes .content .five-columms .item:nth-child(5n) {margin-right: 0;}
+			.notes .content .five-columms .thumb-title {font-size: 2.174%;}
+
+			.notes .content .thumb {position: absolute; left: 0; top: 0; width: 100%; height: 100%;}
+			.notes .content .thumb-title {position: absolute; left: 0; top: calc(100% + 14px);}
+
+			/* ------------------ */
+			.notes .content {background-color: #CCCCCC;}
+			.notes .content .item {background-color: red;}
+			.thumb {background-color: green;}
+			/* ------------------ */
+
+			.notes h1, .notes .thumb-title {
+				-webkit-user-select: none;
+				-moz-user-select: none;
+				-ms-user-select: none;
+				user-select: none;
+			}
+		</style>
+	</head>
+	<body>
+		<div class="library">
+			<div class="notes">
+				<div class="container">
+					<div class="menu"></div>
+					<div class="content">
+						<section>
+							<h1>Title</h1>
+
+							<div class="grid">
+								<div class="item">
+									<div class="thumb"></div>
+									<div class="thumb-title">Jul 20, 1016</div>
+								</div>
+								<div class="item">
+									<div class="thumb"></div>
+									<div class="thumb-title">Jul 20, 1016</div>
+								</div>
+								<div class="item">
+									<div class="thumb"></div>
+									<div class="thumb-title">Jul 20, 1016</div>
+								</div>
+								<div class="item">
+									<div class="thumb"></div>
+									<div class="thumb-title">Jul 20, 1016</div>
+								</div>
+								<div class="item">
+									<div class="thumb"></div>
+									<div class="thumb-title">Jul 20, 1016</div>
+								</div>
+							</div>
+						</section>
+						<section>
+							<h1>Title</h1>
+
+							<div class="grid" style="font-size: 358px;">
+								<div class="item">
+									<div class="thumb"></div>
+									<div class="thumb-title">Jul 20, 1016</div>
+								</div>
+								<div class="item">
+									<div class="thumb"></div>
+									<div class="thumb-title">Jul 20, 1016</div>
+								</div>
+								<div class="item">
+									<div class="thumb"></div>
+									<div class="thumb-title">Jul 20, 1016</div>
+								</div>
+								<div class="item">
+									<div class="thumb"></div>
+									<div class="thumb-title">Jul 20, 1016</div>
+								</div>
+								<div class="item">
+									<div class="thumb"></div>
+									<div class="thumb-title">Jul 20, 1016</div>
+								</div>
+								<div class="item">
+									<div class="thumb"></div>
+									<div class="thumb-title">Jul 20, 1016</div>
+								</div>
+								<div class="item">
+									<div class="thumb"></div>
+									<div class="thumb-title">Jul 20, 1016</div>
+								</div>
+								<div class="item">
+									<div class="thumb"></div>
+									<div class="thumb-title">Jul 20, 1016</div>
+								</div>
+								<div class="item">
+									<div class="thumb"></div>
+									<div class="thumb-title">Jul 20, 1016</div>
+								</div>
+								<div class="item">
+									<div class="thumb"></div>
+									<div class="thumb-title">Jul 20, 1016</div>
+								</div>
+								<div class="item">
+									<div class="thumb"></div>
+									<div class="thumb-title">Jul 20, 1016</div>
+								</div>
+								<div class="item">
+									<div class="thumb"></div>
+									<div class="thumb-title">Jul 20, 1016</div>
+								</div>
+							</div>
+						</section>
+					</div>
+				</div>
+
+				<div class="splitter" onmousedown="begin(event)"></div>
+			</div>
+			<div class="preview">
+				<div class="container">
+					<div class="menu"></div>
+					<div class="content" style="background-color: green"></div>
+				</div>
+			</div>
+		</div>
+	</body>
+</html>

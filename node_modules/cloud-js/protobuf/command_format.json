@@ -1,0 +1,338 @@
+{
+  "nested": {
+    "wacom": {
+      "nested": {
+        "cloud": {
+          "nested": {
+            "command": {
+              "nested": {
+                "format": {
+                  "options": {
+                    "optimize_for": "LITE_RUNTIME"
+                  },
+                  "nested": {
+                    "SyncCommand": {
+                      "fields": {
+                        "parent": {
+                          "rule": "required",
+                          "type": "wacom.cloud.diffsync.format.Payload",
+                          "id": 1
+                        },
+                        "edits": {
+                          "rule": "required",
+                          "type": "wacom.cloud.diffsync.format.SequenceEditList",
+                          "id": 2
+                        },
+                        "shadowEdits": {
+                          "type": "wacom.cloud.diffsync.format.SequenceEditList",
+                          "id": 3
+                        }
+                      }
+                    },
+                    "SyncFailed": {
+                      "fields": {
+                        "parent": {
+                          "rule": "required",
+                          "type": "wacom.cloud.diffsync.format.Payload",
+                          "id": 1
+                        },
+                        "reason": {
+                          "rule": "required",
+                          "type": "Reason",
+                          "id": 2
+                        }
+                      },
+                      "nested": {
+                        "Reason": {
+                          "values": {
+                            "PARENT_NOT_FOUND": 1,
+                            "SHADOW_NOT_FOUND": 2,
+                            "SERVER_ERROR": 3,
+                            "SERVER_TIMEOUT": 4
+                          }
+                        }
+                      }
+                    },
+                    "SequenceUpdated": {
+                      "fields": {
+                        "parent": {
+                          "rule": "required",
+                          "type": "wacom.cloud.diffsync.format.Payload",
+                          "id": 1
+                        }
+                      }
+                    },
+                    "MessageEnvelope": {
+                      "fields": {
+                        "syncCommand": {
+                          "type": "SyncCommand",
+                          "id": 1
+                        },
+                        "syncFailed": {
+                          "type": "SyncFailed",
+                          "id": 2
+                        },
+                        "sequenceUpdated": {
+                          "type": "SequenceUpdated",
+                          "id": 3
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "diffsync": {
+              "nested": {
+                "format": {
+                  "options": {
+                    "optimize_for": "LITE_RUNTIME"
+                  },
+                  "nested": {
+                    "TagEdit": {
+                      "fields": {
+                        "tag": {
+                          "rule": "required",
+                          "type": "string",
+                          "id": 1
+                        },
+                        "type": {
+                          "rule": "required",
+                          "type": "Type",
+                          "id": 2
+                        }
+                      },
+                      "nested": {
+                        "Type": {
+                          "values": {
+                            "TAG_DELETE": -1,
+                            "TAG_ADD": 1
+                          }
+                        }
+                      }
+                    },
+                    "AttrEdit": {
+                      "fields": {
+                        "key": {
+                          "rule": "required",
+                          "type": "string",
+                          "id": 1
+                        },
+                        "value": {
+                          "type": "string",
+                          "id": 2
+                        },
+                        "type": {
+                          "rule": "required",
+                          "type": "Type",
+                          "id": 3
+                        }
+                      },
+                      "nested": {
+                        "Type": {
+                          "values": {
+                            "ATTR_DELETE": -1,
+                            "ATTR_ADD": 1
+                          }
+                        }
+                      }
+                    },
+                    "Payload": {
+                      "fields": {
+                        "type": {
+                          "rule": "required",
+                          "type": "Type",
+                          "id": 1
+                        },
+                        "content": {
+                          "rule": "required",
+                          "type": "bytes",
+                          "id": 2
+                        }
+                      },
+                      "nested": {
+                        "Type": {
+                          "values": {
+                            "SEQUENCE": 1,
+                            "STROKE": 2
+                          }
+                        }
+                      }
+                    },
+                    "NodeEdit": {
+                      "fields": {
+                        "beforeIndex": {
+                          "rule": "required",
+                          "type": "int32",
+                          "id": 1
+                        },
+                        "afterIndex": {
+                          "rule": "required",
+                          "type": "int32",
+                          "id": 2
+                        },
+                        "type": {
+                          "rule": "required",
+                          "type": "Type",
+                          "id": 3
+                        },
+                        "payload": {
+                          "rule": "required",
+                          "type": "Payload",
+                          "id": 4
+                        },
+                        "tagEdits": {
+                          "rule": "repeated",
+                          "type": "TagEdit",
+                          "id": 5
+                        },
+                        "attrEdits": {
+                          "rule": "repeated",
+                          "type": "AttrEdit",
+                          "id": 6
+                        }
+                      },
+                      "nested": {
+                        "Type": {
+                          "values": {
+                            "SES_DELETE": -1,
+                            "SES_COMMON": 0,
+                            "SES_ADD": 1
+                          }
+                        }
+                      }
+                    },
+                    "SequenceEdit": {
+                      "fields": {
+                        "docLocalVersion": {
+                          "rule": "required",
+                          "type": "int64",
+                          "id": 1
+                        },
+                        "docChecksum": {
+                          "rule": "required",
+                          "type": "fixed64",
+                          "id": 2
+                        },
+                        "nodeEdits": {
+                          "rule": "repeated",
+                          "type": "NodeEdit",
+                          "id": 3
+                        }
+                      }
+                    },
+                    "SequenceEditList": {
+                      "fields": {
+                        "docRemoteVersion": {
+                          "rule": "required",
+                          "type": "uint64",
+                          "id": 1
+                        },
+                        "sequenceEdits": {
+                          "rule": "repeated",
+                          "type": "SequenceEdit",
+                          "id": 2
+                        }
+                      }
+                    },
+                    "KeyValuePair": {
+                      "fields": {
+                        "key": {
+                          "rule": "required",
+                          "type": "string",
+                          "id": 1
+                        },
+                        "value": {
+                          "rule": "required",
+                          "type": "string",
+                          "id": 2
+                        }
+                      }
+                    },
+                    "Node": {
+                      "fields": {
+                        "payload": {
+                          "rule": "required",
+                          "type": "Payload",
+                          "id": 1
+                        },
+                        "tags": {
+                          "rule": "repeated",
+                          "type": "string",
+                          "id": 2
+                        },
+                        "attribs": {
+                          "rule": "repeated",
+                          "type": "KeyValuePair",
+                          "id": 3
+                        }
+                      }
+                    },
+                    "Document": {
+                      "fields": {
+                        "main": {
+                          "rule": "repeated",
+                          "type": "Node",
+                          "id": 1
+                        },
+                        "shadow": {
+                          "rule": "repeated",
+                          "type": "Node",
+                          "id": 2
+                        },
+                        "shadowLocalVersion": {
+                          "rule": "required",
+                          "type": "int64",
+                          "id": 3
+                        },
+                        "shadowRemoteVersion": {
+                          "rule": "required",
+                          "type": "int64",
+                          "id": 4
+                        },
+                        "backupShadow": {
+                          "rule": "repeated",
+                          "type": "Node",
+                          "id": 5
+                        },
+                        "backupShadowLocalVersion": {
+                          "rule": "required",
+                          "type": "int64",
+                          "id": 6
+                        },
+                        "pendingEdits": {
+                          "rule": "required",
+                          "type": "SequenceEditList",
+                          "id": 7
+                        },
+                        "shadowSameAsMain": {
+                          "rule": "required",
+                          "type": "bool",
+                          "id": 8
+                        },
+                        "backupSameAsShadow": {
+                          "rule": "required",
+                          "type": "bool",
+                          "id": 9
+                        }
+                      }
+                    },
+                    "PayloadSequence": {
+                      "fields": {
+                        "seq": {
+                          "rule": "repeated",
+                          "type": "Payload",
+                          "id": 1
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

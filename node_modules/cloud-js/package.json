@@ -1,0 +1,55 @@
+{
+  "_args": [
+    [
+      "git+ssh://git@bitbucket.org/wacompa/cloud-js.git",
+      "/Users/tzvetelin.vassilev/Projects/mate-desktop"
+    ]
+  ],
+  "_from": "git+ssh://git@bitbucket.org/wacompa/cloud-js.git",
+  "_id": "cloud-js@git+ssh://git@bitbucket.org/wacompa/cloud-js.git#c7a08c058a88a714f0eebfe2d59fcea521ec2a1a",
+  "_inBundle": false,
+  "_integrity": "",
+  "_location": "/cloud-js",
+  "_phantomChildren": {},
+  "_requested": {
+    "type": "git",
+    "raw": "git+ssh://git@bitbucket.org/wacompa/cloud-js.git",
+    "rawSpec": "git+ssh://git@bitbucket.org/wacompa/cloud-js.git",
+    "saveSpec": "git+ssh://git@bitbucket.org/wacompa/cloud-js.git",
+    "fetchSpec": "ssh://git@bitbucket.org/wacompa/cloud-js.git",
+    "gitCommittish": null
+  },
+  "_requiredBy": [
+    "/"
+  ],
+  "_resolved": "git+ssh://git@bitbucket.org/wacompa/cloud-js.git#c7a08c058a88a714f0eebfe2d59fcea521ec2a1a",
+  "_spec": "git+ssh://git@bitbucket.org/wacompa/cloud-js.git",
+  "_where": "/Users/tzvetelin.vassilev/Projects/mate-desktop",
+  "author": {
+    "name": "Wacom Co LTD"
+  },
+  "dependencies": {
+    "faye-websocket": "^0.11.1",
+    "lodash": "^4.17.5",
+    "protobufjs": "^6.8.6",
+    "uuid": "^3.0.1"
+  },
+  "description": "Elastic search communication API ",
+  "devDependencies": {
+    "leveldown": "^3.0.0",
+    "levelup": "^2.0.2",
+    "mocha": "^3.5.3"
+  },
+  "homepage": "https://bitbucket.org/wacompa/cloud-js#readme",
+  "license": "ISC",
+  "main": "index.js",
+  "name": "cloud-js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://vveselinov_wacom@bitbucket.org/wacompa/cloud-js.git"
+  },
+  "scripts": {
+    "test": "mocha"
+  },
+  "version": "2.3.3"
+}

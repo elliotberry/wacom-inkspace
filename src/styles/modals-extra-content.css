@@ -1,0 +1,53 @@
+.bt-instructions {position: relative;}
+.bt-instructions a {position: absolute; right: 0; top: -50px; color: blue; font-size: 14px; text-decoration: underline;}
+.bt-instructions ol li {margin: 5px 0;}
+
+.SetName form {margin: 120px auto 10px auto;}
+
+.tags-list {max-height: calc(100vh - 320px); margin-bottom: 50px; overflow-y: auto;}
+.tags-list .row {overflow: hidden; height: 34px; line-height: 34px; cursor: pointer;}
+.tags-list .row:hover {background-color: #DCDCDC;}
+.tags-list .row-icon {display: inline-block; height: 34px; transform: scale(0.85);}
+.tags-list .row-icon path {fill: #999999;}
+.tags-list .row span {display: inline-block; vertical-align: top;}
+.tags-list .row input {display: inline-block; vertical-align: top; margin-top: 7px; width: 320px; outline: none;}
+.tags-list .row .row-action-bar {float: right; visibility: hidden;}
+.tags-list .row .row-action-bar.visible {visibility: visible;}
+.tags-list .row:hover .row-action-bar {visibility: visible;}
+.tags-list .row .row-action-bar a {display: inline-block; margin: 0 5px;}
+
+.tags-list .row.disabled:hover {background-color: transparent;}
+.tags-list .row.disabled {color: #00A5E2; cursor: default;}
+.tags-list .row.disabled .icon path {fill: #00A5E2;}
+.tags-list .row.disabled .row-icon path {fill: #00A5E2;}
+
+.tags-list .row .icon.notfound {display: none;}
+.tags-list .row .icon.partial path {fill: #B3B3B3;}
+.tags-list .row .icon.checked path {fill: #00A7DB;}
+
+.tags-list .row .tagged-notes-count {color: #00A7DB;}
+
+.tags-list::-webkit-scrollbar {display: none;}
+
+.TagsEditor .dialog {width: 570px}
+.TagsEditor .tags-list .row:hover .row-action-bar .icon:hover path {fill: white;}
+
+.wacom-id-benefits img {display: block; width: 50%;}
+.wacom-id-benefits .title {margin-top: 6px; font-size: 13px; color: #a0a0a0;}
+.wacom-id-benefits .features {margin: 42px 0;}
+
+.wacom-id-benefits table tr:nth-child(odd) th {padding-top: 10px;}
+.wacom-id-benefits table tr:nth-child(odd) td {padding-top: 10px; font-size: 14px; color: #333333;}
+.wacom-id-benefits table tr:nth-child(even) td {font-size: 13px; color: #a0a0a0;}
+.wacom-id-benefits table tr:first-child th {padding-top: 0;}
+.wacom-id-benefits table tr:first-child td {padding-top: 0;}
+.wacom-id-benefits table th svg {width: 12px; height: 12px;}
+.wacom-id-benefits table td {padding-left: 10px;}
+
+.dialog .wacom-id-benefits {margin-top: 8px;}
+.dialog .wacom-id-benefits img {margin: 0 auto;}
+.dialog .wacom-id-benefits .title {text-align: center;}
+.dialog .wacom-id-benefits .features {overflow-y: auto; max-height: calc(100vh - 360px);}
+.dialog .wacom-id-benefits table {margin: 0 auto;}
+
+.video-progress-bar {height: 150px; padding: 50px 60px 0 60px;}

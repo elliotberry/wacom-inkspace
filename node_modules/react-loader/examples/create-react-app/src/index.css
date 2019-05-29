@@ -1,0 +1,14 @@
+body {
+  margin: 0;
+  padding: 0;
+  font-family: sans-serif;
+}
+
+.loader-wrapper {
+  text-align: center;
+  margin: 25px;
+}
+
+.loaded-contents {
+  margin: 25px;
+}

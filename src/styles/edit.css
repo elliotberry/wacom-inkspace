@@ -1,0 +1,50 @@
+.edit {background-color: #f5f5f5;}
+.edit header {text-align: center;}
+.edit .content {position: relative;}
+
+.edit .progress-bar-protector {position: absolute; left: 0; top: 0; width: 100%; height: 100%; z-index: 1005; background-color: #F5F5F5;}
+.edit .progress-bar-surface {background-color: white;}
+.edit .edit-progress-bar {width: 100%; max-width: 500px; margin: 0 15px;}
+
+.layer-pane {position: absolute; left: 0; bottom: 0; width: 100%; height: 230px; background-color: rgba(220, 220, 220, 0.9);}
+.layer-pane {transition-property: all; transition-duration: 0.5s; transition-timing-function: cubic-bezier(0, 1, 0.5, 1);}
+
+.layer-pane.landscape {height: 195px;}
+.layer-pane.hidden {height: 0;}
+
+.layer-pane .header {position: relative; font-size: 11px; text-align: center; width: 884px; height: 40px; margin: 0 auto; color: #333; border-bottom: 1px solid rgba(51, 51, 51, 0.1);}
+.layer-pane .header .menu-wrapper {position: absolute; top: 0; right: 0; overflow: hidden;}
+.layer-pane .header .menu-wrapper .menu {margin-top: 3px;}
+.layer-pane .header .menu-wrapper .menu ul {margin: 0;}
+
+.layer-pane .scrollarea {height: calc(100% - 40px); margin: 0 auto;}
+.layer-pane.loading-progress .scrollarea .scrollbar {display: none;}
+
+.layer-pane .thumb-container {padding: 0 30px 0 30px;}
+
+.layer-pane .layer {display: inline-block; margin-right: 20px;}
+.layer-pane .layer:last-child {margin-right: 0;}
+.layer-pane .layer.disabled {opacity: 0.5;}
+
+.layer-pane .layer .layer-menu {visibility: hidden; text-align: center;}
+.layer-pane .layer.selected .layer-menu {visibility: visible;}
+
+.layer-pane .layer:hover .layer-menu {visibility: visible;}
+.layer-pane .layer .layer-menu.hidden {visibility: hidden;}
+.layer-pane .layer:hover .layer-menu.hidden {visibility: hidden;}
+
+.layer-pane .layer .layer-menu a.icon {display: inline-block;}
+.layer-pane .layer .layer-menu svg {transform: scale(0.71);}
+.layer-pane .layer .layer-menu svg circle {fill: #333333;}
+.layer-pane .layer .layer-menu svg path {fill: #ffffff;}
+
+.layer-pane .layer-label { margin-top: 6px; font-size: 11px; font-weight: 600; color: #333333; text-align: center;}
+
+.layer-pane .layer-img {width: 80px; height: 115px; border-radius: 5px; box-shadow: 0 1px 1px 0 rgba(0, 0, 0, 0.16); background: linear-gradient(319deg, rgba(255, 255, 255, 1) 0, rgba(248, 247, 245, 1) 100%); text-align: center;}
+.layer-pane.landscape .layer-img {width: 115px; height: 80px;}
+.layer-pane .layer-img img {opacity: 0.7;}
+
+.canvas-relative {position: relative; left: 0; top: 0; width: 100%; height: 100%; overflow: hidden;}
+.canvas-absolute, canvas {position: absolute; left: 0; top: 0; transform-origin: 0 0;}
+.canvas-absolute {background-color: white;}
+.canvas-protector {position: absolute; left: 0; top: 0; width: 100%; height: 100%; background-color: blue; opacity: 0.5;}

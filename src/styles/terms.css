@@ -1,0 +1,13 @@
+.terms .terms-content {height: calc(100vh - 100px - 85px); padding: 85px 90px 0 90px;}
+
+.terms .terms-content .WordSection1 {height: 100%; overflow-y: auto; color: #000;}
+.terms .terms-content .WordSection1::-webkit-scrollbar {display: none;}
+
+.terms .terms-content .WordSection1 p {
+	font-size: initial;
+	margin-top: 0;
+}
+
+.terms .terms-bar {position: relative; height: 100px;}
+.terms .terms-bar .action-bar {position: absolute; bottom: 30px; right: 90px;}
+.terms .terms-bar .lang-container {position: absolute; bottom: 30px; left: 90px;}

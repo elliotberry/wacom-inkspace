@@ -1,0 +1,17 @@
+bridge.js
+	1. define navigator
+		global.navigator = {userAgent: ""};
+	2. last row:
+		global instead this
+	3. replace row
+		globals.System = System;
+			with
+ 		globals.System = (typeof System == "undefined") ? {} : System;
+
+wacom.smartPadCommunication.js
+	1. First rows - integrate bridge:
+		var bridge = require('./bridge');
+	2. Last row in anonymous function:
+		module.exports = bridge.global.Wacom.SmartPadCommunication;
+	3. last row:
+		global instead this

@@ -1,0 +1,21 @@
+.terms .react-tabs {padding: 0 180px;}
+.terms .react-tabs [role=tablist] {border: none; margin-bottom: 24px;}
+.terms .react-tabs [role=tab] span {display: inline-block; width: 180px; margin: 10px 0; text-align: center;}
+.terms .react-tabs [role=tabpanel] {margin: 0;}
+.terms .react-tabs__tab-panel--selected {height: calc(100vh - 66px - 114px);}
+.terms .react-tabs__tab-panel--selected .terms-content {height: 100%;}
+
+.terms .terms-content .WordSection1 {height: 100%; overflow-y: auto; color: #000;}
+.terms .terms-content .WordSection1::-webkit-scrollbar {display: none;}
+
+.terms .terms-content .WordSection1 p {
+	font-size: initial;
+	margin-top: 0;
+}
+
+.terms .terms-bar {overflow: hidden; margin-top: 24px;}
+.terms .terms-bar label {font-size: 14px; color: black; margin-left: 10px;}
+.terms .terms-bar .license-agree-row {margin-top: 24px;}
+.terms .terms-bar .lang-container {float: left; margin-left: 180px;}
+.terms .terms-bar .lang-container .select-lang {font-size: 14px; margin-left: 60px;}
+.terms .terms-bar .action-bar {float: right; padding-top: 11px; margin-right: 180px;}

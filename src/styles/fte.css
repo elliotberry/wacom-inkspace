@@ -1,0 +1,51 @@
+.fte .left-pane {position: absolute; left: 0; top: 0; width: 46%; height: 100%;}
+.fte .right-pane {position: absolute; left: 46%; top: 0; width: calc(100vw - 46% - 90px); height: 100%; padding-right: 90px;}
+.fte .right-pane .flex-wrapper {justify-content: flex-start;}
+
+.fte .fte-content h1 {font-weight: 200; color: black;}
+.fte .fte-content h1 span {display: block; font-size: 45px; line-height: 45px; margin: -8px 0 0 0;}
+.fte .fte-content p {font-size: 15px; line-height: 25px; margin: 20px 0 38px 0;}
+
+.orientationIcon {
+	position: relative;
+	width: 300px;
+	height: 300px;
+	margin: 0 auto;
+}
+.orientationIcon .top {
+	position: absolute;
+	left: calc(50% - 57px);
+	top: 0;
+}
+
+.orientationIcon .bottom {
+	position: absolute;
+	left: calc(50% - 57px);
+	bottom: 0;
+}
+
+.orientationIcon .left {
+	position: absolute;
+	top: calc(50% - 57px);
+	left: 0;
+}
+
+.orientationIcon .right {
+	position: absolute;
+	top: calc(50% - 57px);
+	right: 0;
+}
+.orientationIcon .top,
+.orientationIcon .bottom,
+.orientationIcon .left,
+.orientationIcon .right {
+	width: 114px;
+	height: 114px;
+}
+
+.orientationIcon .right:hover,
+.orientationIcon .left:hover,
+.orientationIcon .top:hover,
+.orientationIcon .bottom:hover {
+	cursor: pointer;
+}

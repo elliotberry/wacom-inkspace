@@ -1,0 +1,109 @@
+"use strict";
+
+const EventEmitter = require("events");
+const WebSocket = require("faye-websocket")
+
+const { SyncCommand } = require("./command");
+const { writeCloudCommand, readCloudCommand } = require("./encoder-decoder");
+
+class CloudTransport {
+	/**
+	 * @param {string} url web socket server location
+	 * @param {string} [accessToken]
+	 * @param {string} [clientInstanceID]
+	 */
+	constructor(url, accessToken, clientInstanceID) {
+		this.url = url;
+		this.accessToken = accessToken;
+		this.clientInstanceID = clientInstanceID;
+
+		this.emitter = new EventEmitter();
+		this.connected = false;
+	}
+
+	open() {
+		if (!this.accessToken || this.socket) {
+			return;
+		}
+
+		this.connected = false;
+
+		let options = {
+			headers: {
+				"Authorization": `Bearer ${this.accessToken}`,
+				"X-Client-Instance": this.clientInstanceID
+			}
+		};
+
+		if (this.proxy) {
+			options.proxy = {
+				origin: this.proxy,
+				headers: {"User-Agent": "node"}
+			};
+		}
+
+		this.socket = new WebSocket.Client(this.url, null, options);
+
+		this.socket.on("open", () => {
+			this.connected = true;
+			this.emitter.emit("CloudTransportOpen");
+		});
+
+		this.socket.on("message", (event) => {
+			this.receive(event.data);
+		});
+
+		this.socket.on("close", () => {
+			this.socket = null;
+			this.connected = false;
+			this.emitter.emit("CloudTransportClosed");
+		});
+
+		this.socket.on("error", (e) => {
+			console.error(e)
+		});
+	}
+
+	isOpen() {
+		return !!this.socket && this.connected;
+	}
+
+	close() {
+		if (this.isOpen()) {
+			this.socket.close();
+		}
+	}
+
+	/**
+	 * @param {Payload} key
+	 * @param {EditList} edits
+	 * @param {EditList} shadowEdits
+	 * @return {boolean} is send successful
+	 */
+	send(key, edits, shadowEdits) {
+		if (!this.isOpen()) return false;
+
+		let command = new SyncCommand(key, edits, shadowEdits);
+		this.socket.send(writeCloudCommand(command));
+
+		return true;
+	}
+
+	/**
+	 * @param {Buffer} arrayBuffer web socket data
+	 */
+	receive(arrayBuffer) {
+		try {
+			this.emitter.emit("CloudTransportData", { command: readCloudCommand(Buffer.from(arrayBuffer))} );
+		} catch(e) {
+			console.error(e.stack);
+		}
+	}
+
+	// Events: CloudTransportOpen, CloudTransportData, CloudTransportClosed
+	on(event, fn) {
+		this.emitter.on(event, fn);
+	}
+}
+
+module.exports = CloudTransport;

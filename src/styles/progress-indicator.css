@@ -1,0 +1,70 @@
+.progress-indicator-container,
+.notification-list {
+	display: flex;
+	flex-flow: row nowrap;
+	justify-content: center;
+	align-items: center;
+	align-content: stretch;
+	position: absolute;
+	bottom: -40px;
+	width: 100%;
+	z-index: 1001;
+}
+.progress-indicator,
+.notification-bar {
+	width: auto;
+	padding: 0 20px 0 15px;
+	font-weight: 500;
+	font-size: 13px;
+	color: #fff;
+	background: #000;
+	border-radius: 10px;
+	height: 40px;
+	line-height: 40px;
+	position: fixed;
+	bottom: -45px;
+	transition: all 0.5s cubic-bezier(0.89, 0.01, 0.5, 1.1);
+}
+
+.progress-indicator.visible {
+	bottom: 35px;
+}
+
+.notification-bar.activeNotification {
+	bottom: 35px;
+}
+
+.progress-indicator .progress-inner {
+	width: auto;
+	margin: 0;
+	padding: 0;
+	font-size: 14px;
+	flex-flow: row nowrap;
+	justify-content: flex-start;
+	align-items: stretch;
+	align-content: stretch;
+	display: flex;
+}
+.progress-indicator .progress-inner span {
+	display: inline-block;
+}
+.progress-indicator .progress-inner span:last-child {
+	margin-left: 40px;
+}
+.progress-indicator .progress-inner span:first-child {
+	margin-left: 0;
+}
+
+.progress-indicator .progress-inner span {
+	display: inline-block;
+}
+.progress-indicator .progress-inner  .progress-message{
+	width: 100%;
+}
+.progress-indicator .progress-inner .progress-icon{
+	width: 34px;
+	margin: 4px 15px 0 0;
+}
+.progress-icon .loader {
+	background: none;
+}

@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>react-loader example</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-core/5.6.16/browser.js"></script>
+  <script src="../../node_modules/react/dist/react.js"></script>
+  <script src="../../node_modules/react-dom/dist/react-dom.js"></script>
+  <script src="../../node_modules/create-react-class/create-react-class.js"></script>
+  <script src="../../node_modules/prop-types/prop-types.js"></script>
+  <script src="../../node_modules/spin.js/spin.js"></script>
+  <script src="../../lib/react-loader.js"></script>
+
+  <style>
+    .card{
+      position: absolute;
+      top: 47%;
+      left: calc(50% - 58px);
+      padding: 8px 16px;
+      box-shadow: 1px 1px 1px 1px rgba(0,0,0,0.2);
+    }
+    button{
+      position: absolute;
+      top: calc(50% + 38px);
+      left: calc(50% - 26px);
+    }
+  </style>
+
+</head>
+<body>
+  <div id="demo">Something went wrong.</div>
+
+  <script type="text/babel">
+
+    const Demo = createReactClass({
+      getInitialState: function() {
+        return { loaded: false, data: null };
+      },
+
+      componentDidMount: function() {
+        this.simulateLoad();
+      },
+
+      simulateLoad: function() {
+        this.setState({ loaded: false })
+        // Simulated a response callback/promise/etc.
+        setTimeout(function() {
+          this.onSuccess('Hello World!');
+        }.bind(this), 1500);
+      },
+
+      onSuccess: function(data) {
+        this.setState({ loaded: true, data: data });
+      },
+
+      render: function() {
+        return (
+          <div className="demo">
+            <Loader loaded={this.state.loaded}>
+              <div className="card">{this.state.data}</div>
+            </Loader>
+            <button onClick={this.simulateLoad} disabled={!this.state.loaded}>Reload</button>
+          </div>
+        );
+      }
+    })
+
+    ReactDOM.render(<Demo />, document.getElementById('demo'));
+
+  </script>
+</body>
+</html>

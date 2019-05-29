@@ -1,0 +1,86 @@
+.export-as-text-modal .dialog-content h1 {
+	font-size: 25px;
+	font-weight: 600;
+	color: #333333;
+	margin: 0;
+	padding: 0;
+	line-height: 40px;
+	border-bottom: 1px solid #dcdcdc;
+}
+
+.export-text-content {
+	margin-top: 45px;
+	max-height: 240px;
+	overflow: auto;
+	-ms-overflow-style: scrollbar;
+}
+
+.export-text-content p {
+	font-size: 14px;
+	color: #999999;
+	line-height: 25px;
+	margin-top: 0;
+	margin-bottom: 40px;
+	padding: 0;
+}
+
+.export-text-content p:last-of-type {
+	margin-bottom: 0;
+}
+
+.export-text-language {
+	height: 62px;
+	margin: 45px 0;
+	border-top: 1px solid #dcdcdc;
+	border-bottom: 1px solid #dcdcdc;
+}
+
+.export-text-language li:first-child {
+	clear: both;
+	width: 100%;
+	padding: 11px 0;
+}
+
+.export-text-left {
+	float: left;
+	line-height: 37px;
+	font-size: 14px;
+	color: #999999;
+}
+
+.export-text-right {
+	float: right;
+	min-width: 110px;
+	text-align: right;
+}
+
+.export-text-right a {
+	font-size: 15px;
+	font-weight: 700;
+	line-height: 40px;
+	opacity: 0.85;
+}
+
+.export-btn-cont {
+	float: right;
+}
+
+.export-text-success {
+	margin-right: 22px;
+}
+
+.export-text-cancel {
+	font-size: 15px;
+	color: #333333;
+	font-weight: 700;
+}
+
+.ExportAsText ul {
+	list-style-type: none;
+	margin: 0;
+	padding: 0;
+}
+
+.ExportAsText ul li {
+	display: inline-block;
+}

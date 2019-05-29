@@ -1,0 +1,105 @@
+.icon svg {width: 34px; height: 34px;}
+.icon svg circle:first-child {cx: 17px; cy: 17px; r: 17px;}
+.icon:hover svg {fill-opacity: 0.9;}
+.icon:hover svg circle:first-child {fill: rgba(0, 0, 0, 0.1);}
+
+.icon.disabled {pointer-events: none;}
+.icon:hover.disabled svg circle {fill: none;}
+.icon.disabled svg path {fill: rgba(0, 0, 0, 0.5);}
+.icon.disabled svg polygon {fill: rgba(0, 0, 0, 0.5);}
+
+.icon:hover.button svg {fill-opacity: 1;}
+.icon:hover.button svg circle {fill: none;}
+
+.active .icon svg circle {fill: black;}
+.active .icon svg path {fill: #ffffff;}
+.active .icon:hover svg {fill-opacity: 1;}
+.active .icon:hover svg circle:first-child {fill: rgba(0, 0, 0, 0.6);}
+
+.icon.device-status svg circle {fill: #999999;}
+.icon.device-status svg path {fill: #ffffff;}
+.icon:hover.device-status svg circle {fill: #999999;}
+
+.icon.device-status.connected svg circle {fill: #00aeef;}
+.icon:hover.device-status.connected svg circle {fill: #00aeef;}
+.icon.device-status.connected.charging svg path:last-of-type {fill: #00aeef;}
+
+.loader {position: relative; width: 34px; height: 34px;}
+.device-status .loader {border-radius: 50%; background-color: #00a7db;}
+
+.icon.syncing {position: relative;}
+.icon.syncing .cloud-arrow {position: absolute; left: 13px; width: 8px; height: 5px;}
+
+/*
+.cloud-arrow-down {left: 13px; top: 20px; animation: MoveUpDown 1.7s linear infinite;}
+
+@keyframes MoveUpDown {
+	0%   {top: 20px; opacity: 0;}
+	10%  {opacity: 1;}
+	40%  {opacity: 1;}
+	49%  {transform: rotate(0deg);}
+	50%  {transform: rotate(180deg); top: 24px; opacity: 0;}
+	60%  {opacity: 1;}
+	99%  {transform: rotate(180deg);}
+	100% {transform: rotate(0deg); top: 20px;}
+}
+*/
+
+.icon.syncing .cloud-arrow-down  {
+	animation-name: MoveDown;
+	animation-duration: 2s;
+	animation-timing-function: ease-out;
+	animation-iteration-count: infinite;
+}
+
+@keyframes MoveDown {
+	0%   {top: 20px; opacity: 0;}
+	10%  {opacity: 1;}
+	40%  {top: 24px; opacity: 1;}
+	51%  {opacity: 0;}
+	100% {top: 20px; opacity: 0;}
+}
+
+.icon.syncing .cloud-arrow-up  {
+	opacity: 0;
+
+	animation-name: MoveUp;
+	animation-duration: 2s;
+	animation-timing-function: ease-out;
+	animation-delay: 1s;
+	animation-iteration-count: infinite;
+}
+
+@keyframes MoveUp {
+	0%   {top: 24px; opacity: 0;}
+	10%  {opacity: 1;}
+	40%  {top: 20px; opacity: 1;}
+	51%  {opacity: 0;}
+	100% {top: 24px; opacity: 0;}
+}
+
+svg.arrow-down {width: 11px; height: 7px; margin-left: 3px;}
+
+.note-layer-menu {height: 34px}
+.note-item .note-layer-menu {visibility: hidden;}
+.note-item.selected .note-layer-menu {visibility: visible;}
+.note-item .note-layer-menu svg {display: block; margin: 0 auto;}
+
+.scrub-icon {display: block; width: 34px; height: 34px;}
+.scrub-icon.left {margin-right: 10px;}
+.scrub-icon.right { margin-left: 19px;}
+
+svg.logo {width: 200px; height: 200px;}
+.about-container svg.logo {transform: scale(0.8)}
+
+.navigation-dots {display: flex; flex-flow: row nowrap; justify-content: center; align-items: baseline; align-content: stretch; margin-top: 20px;}
+.navigation-dots ul {list-style-type: none; margin: 0 auto;}
+.navigation-dots ul li {display: inline-block; width: 12px; height: 12px; padding: 2px; opacity: 0.4;}
+.navigation-dots ul li svg {width: 6px; height: 6px; margin: 3px 0 0 3px;}
+.navigation-dots ul li.selected {opacity: 1;}
+.navigation-dots ul li.selected svg {width: 12px; height: 12px; margin: 0;}
+.navigation-dots ul li.pointer {cursor: pointer;}
+.navigation-dots ul li .dot {width: 6px; height: 6px;}
+.navigation-dots ul li .dot circle {cx: 3px; cy: 3px; r: 3px; fill: #999999;}
+.navigation-dots ul li.selected .dot {width: 10px; height: 10px; margin-top: -2px;}
+.navigation-dots ul li.selected .dot circle {cx: 5px; cy: 5px; r: 5px; fill: #000000;}

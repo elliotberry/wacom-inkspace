@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+
+		<title>Inkspace</title>
+
+		<script type="text/javascript" src="scripts/js.ext.js"></script>
+		<script type="text/javascript" src="scripts/ink-engine/Module.js"></script>
+		<script type="text/javascript">Module.memoryInitializerPrefixURL = __dirname + "/" + Module.memoryInitializerPrefixURL;</script>
+		<script type="text/javascript" src="scripts/ink-engine/WacomInkEngine.js"></script>
+
+		<link rel="stylesheet" href="dist/bundle.css">
+	</head>
+	<body>
+		<div id="root">
+			<div style="display: flex; align-items: center; justify-content: center; width: 100vw; height: 100vh;">
+				<img src="src/components/images/splash.png" />
+			</div>
+		</div>
+
+		<div id="canvas-container" style="display: none">
+			<div class="canvas-relative">
+				<div id="canvas-layers" class="canvas-absolute">
+					<canvas id="canvas" ondragstart="event.preventDefault(); event.stopPropagation()" oncontextmenu="event.preventDefault();"></canvas>
+				</div>
+				<div class="canvas-protector" style="display: none"></div>
+			</div>
+		</div>
+
+		<script src="dist/runtime.js"></script>
+		<script src="dist/vendor.js"></script>
+		<script src="dist/main.js"></script>
+	</body>
+</html>

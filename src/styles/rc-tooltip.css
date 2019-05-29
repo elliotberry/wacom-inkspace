@@ -1,0 +1,45 @@
+.rc-tooltip {
+	position: absolute;
+	z-index: 1070;
+	display: block;
+	visibility: visible;
+	font-size: 12px;
+	line-height: 1.5;
+	opacity: 0.9;
+}
+
+.rc-tooltip-placement-bottom .rc-tooltip-arrow {
+	left: 50%;
+	top: -5px;
+	margin-left: -5px;
+	border-width: 0 5px 5px;
+	border-bottom-color: #373737;
+}
+
+.rc-tooltip-arrow {
+	position: absolute;
+	width: 0;
+	height: 0;
+	border-color: transparent;
+	border-style: solid;
+}
+
+.rc-tooltip-inner {
+	padding: 0 10px;
+	color: #fff;
+	text-align: left;
+	text-decoration: none;
+	background-color: #373737;
+	border-radius: 3px;
+	height:23px;
+	min-height: 23px;
+}
+
+.rc-tooltip-inner > div {
+	width: auto;
+	min-width: 77px;
+	font-size: 12px;
+	color: #ffffff;
+	text-align: center;
+	line-height: 23px;
+}

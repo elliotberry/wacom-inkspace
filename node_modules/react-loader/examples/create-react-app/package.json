@@ -1,0 +1,16 @@
+{
+  "name": "react-loader-examples",
+  "version": "0.1.0",
+  "private": true,
+  "devDependencies": {
+    "react-scripts": "0.6.0"
+  },
+  "dependencies": {
+    "react": "^15.3.2",
+    "react-dom": "^15.3.2",
+    "react-loader": "^2.4.0"
+  },
+  "scripts": {
+    "start": "react-scripts start"
+  }
+}

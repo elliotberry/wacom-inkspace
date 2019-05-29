@@ -1,0 +1,38 @@
+import 'diffsync_format.proto';
+
+package wacom.cloud.command.format;
+
+option optimize_for = LITE_RUNTIME;
+
+message SyncCommand
+{
+    required wacom.cloud.diffsync.format.Payload parent = 1;
+    required wacom.cloud.diffsync.format.SequenceEditList edits = 2;
+    optional wacom.cloud.diffsync.format.SequenceEditList shadowEdits = 3;
+}
+
+message SyncFailed
+{
+    enum Reason
+    {
+        PARENT_NOT_FOUND = 1;
+        SHADOW_NOT_FOUND = 2;
+        SERVER_ERROR     = 3;
+        SERVER_TIMEOUT   = 4;
+    }
+
+    required wacom.cloud.diffsync.format.Payload parent = 1;
+    required Reason reason = 2;
+}
+
+message SequenceUpdated
+{
+    required wacom.cloud.diffsync.format.Payload parent = 1;
+}
+
+message MessageEnvelope
+{
+    optional SyncCommand syncCommand = 1;
+    optional SyncFailed syncFailed = 2;
+    optional SequenceUpdated sequenceUpdated = 3;
+}

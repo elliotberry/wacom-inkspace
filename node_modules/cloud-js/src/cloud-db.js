@@ -1,0 +1,424 @@
+"use strict";
+
+const uuid = require("uuid");
+
+const DiffSyncDoc = require("./diff-sync-doc");
+const { Payload } = require("./node");
+const { writeDoc, readDoc } = require("./encoder-decoder");
+
+const OperationType = {
+	PUT:    "put",
+	DELETE: "del"
+};
+
+const DB_OPTIONS = {
+	keyEncoding: "binary",
+	valueEncoding: "binary"
+};
+
+class CloudDB {
+	/**
+	 * @param {LevelDB} db
+	 * @param {Payload[]} roots
+	 */
+	constructor(db, roots) {
+		this.roots = roots;
+		this.db = db;
+
+		this.unsyncedCollectionKey = Buffer.from("__unsynced__");
+		this.changedCollectionKey = Buffer.from("__changed__");
+		this.childToParentRelationPrefix = Buffer.from("__child_to_parent__");
+
+		this.parentToChildCache = {};
+	}
+
+	getUUID() {
+		return new Promise((resolve, reject) => {
+			this.db.get(Buffer.from("uuid"), DB_OPTIONS, (error, value) => {
+				if (error) {
+					if (error.type === "NotFoundError") {
+						value = uuid();
+
+						this.db.put(Buffer.from("uuid"), Buffer.from(value), DB_OPTIONS, (error) => {
+							if (error) reject(error); else resolve(value);
+						});
+					} else {
+						reject(error);
+					}
+				} else {
+					// replace is needed for migrated dbs to lates leveldb where db is binary only
+					resolve(value.toString().replace(/\"/g, ""));
+				}
+			});
+		});
+	}
+
+	del(key, options) {
+		if (typeof key == "string") key = Buffer.from(key);
+
+		return new Promise((resolve, reject) => {
+			this.db.del(key, DB_OPTIONS, (err) => err ? reject(err) : resolve());
+		});
+	}
+
+	async clean() {
+		await Promise.all([
+			this.del(this.unsyncedCollectionKey, DB_OPTIONS),
+			this.del(this.changedCollectionKey, DB_OPTIONS),
+			this.del("uuid")
+		]).then(() => {
+			this[this.unsyncedCollectionKey] = [];
+			this[this.changedCollectionKey] = [];
+		});
+
+		await Promise.all(this.roots.map(async (root) => {
+			await this.set(root, DiffSyncDoc.createEmpty())
+			await this.del(root.encodedData, DB_OPTIONS)
+		}));
+	}
+
+	/**
+	 * @private
+	 *
+	 * @param {Buffer} key
+	 * @return {Promise}
+	 */
+	getData(key) {
+		return new Promise((resolve, reject) => {
+			this.db.get(key, DB_OPTIONS, (error, data) => {
+				if (error) {
+					if (error.type === "NotFoundError") {
+						resolve();
+					} else {
+						reject(error);
+					}
+				} else {
+					resolve(data);
+				}
+			});
+		});
+	}
+
+	getOperation(type, key, value) {
+		return { type, key, value };
+	}
+
+	/**
+	 * @param {Payload} key
+	 */
+	async getParent(key) {
+		if (this.roots.includesPayload(key)) {
+			return key;
+		}
+
+		if (this.parentToChildCache[key.encodedDataHash]) {
+			return this.parentToChildCache[key.encodedDataHash];
+		}
+
+		let parentRelKey = this.getChildToParentRelationKey(key);
+
+		const parent = await this.getData(parentRelKey);
+
+		if (parent) {
+			this.parentToChildCache[key.encodedDataHash] = Payload.createFromEncodedData(parent);
+			return this.parentToChildCache[key.encodedDataHash];
+		}
+	}
+
+	/**
+	 * @return {Array<Payload>} payloads sequence
+	 */
+	getUnsynchronized() {
+		return this.getIndexCollection(this.unsyncedCollectionKey);
+	}
+
+	/**
+	 * @return {Array<Payload>} payloads sequence
+	 */
+	getChanged() {
+		return this.getIndexCollection(this.changedCollectionKey);
+	}
+
+	/**
+	 * @param {Buffer} collectionKey
+	 * @return {Promise<Array<Payload>>} payloads sequence
+	 */
+	async getIndexCollection(collectionKey) {
+		if (this[collectionKey]) {
+			return this[collectionKey];
+		}
+
+		return await new Promise((resolve, reject) => {
+			const collection = [];
+
+			this.db.createReadStream({
+				gte: Buffer.concat([collectionKey, Buffer.from([0])]),
+				lte: Buffer.concat([collectionKey, Buffer.from([255])]),
+				values: false,
+				keyEncoding: "binary"
+			})
+				.on('data', (key) => {
+					collection.push(Payload.createFromEncodedData(key.slice(collectionKey.length)));
+				})
+				.on('error', (err) => {
+					reject(err);
+				})
+				.on('end', () => {
+					this[collectionKey] = collection;
+					resolve(collection);
+				})
+		});
+	}
+
+	/**
+	 * @param {Payload} key
+	 * @return {Buffer} relation key
+	 */
+	getChildToParentRelationKey(key) {
+		return Buffer.concat([this.childToParentRelationPrefix, key.encodedData]);
+	}
+
+	/**
+	 * @param {Payload} key
+	 * @param {boolean} [empty] when not found is created new one
+	 * @return {Promise<DiffSyncDoc>} doc
+	 */
+	async get(key, empty) {
+		if (!this.roots.includesPayload(key) && !key.isUnique()) {
+			throw new Error(`The provided key = "${key.toString()}" is not an unique payload. It cannot be a parent of a sequence!`);
+		}
+
+		const data = await this.getData(key.encodedData);
+
+		if (data) {
+			return readDoc(data);
+		}
+
+		return empty ? DiffSyncDoc.createEmpty() : null;
+	}
+
+	/**
+	 * @param {Payload} key
+	 * @param {DiffSyncDoc} doc
+	 * @return {Promise}
+	 */
+	async set(key, doc) {
+		if (!this.roots.includesPayload(key) && !key.isUnique()) {
+			throw new Error(`The provided key = "${key.toString()}" is not an unique payload. It cannot be a parent of a sequence!`);
+		}
+
+		const parent = await this.getParent(key);
+
+		if (!parent) {
+			// throw new Error(`The provided key = "${key.toString()}" is not a root sub-child!`);
+			console.warn(`The provided key = "${key.toString()}" is not a root sub-child!`);
+
+			let idx = this[this.unsyncedCollectionKey].findIndex(item => item.equals(key));
+			if (idx != -1) this[this.unsyncedCollectionKey].splice(idx, 1);
+
+			return;
+		}
+
+		doc.removeDuplications();
+
+		let update = await this.getUpdate(key, doc);
+
+		let { added, removed } = update;
+		let promises = [];
+
+		let addedChildren = added;
+		let removedChildren = removed;
+
+		added.forEach(payload => {
+			if (payload.isUnique()) {
+				promises.push(this.getParent(payload));
+			}
+		});
+
+		let parents = await Promise.all(promises);
+
+		for (let parent of parents) {
+			if (parent && !parent.equals(key)) {
+				throw new Error(`Trying to add child to '${key.toString()}', but it is already a child of '${parent.toString()}'!`);
+			}
+		}
+
+		let addedChildToParentOps = addedChildren
+			.filter(child => child.isUnique())
+			.map(payload => this.getOperation(OperationType.PUT, this.getChildToParentRelationKey(payload), key.encodedData));
+
+		let ops = [...addedChildToParentOps];
+
+		removedChildren = await this.cascade(removedChildren);
+
+		if (this.debug) {
+			console.log(`removedChildren: ${removedChildren}`);
+		}
+
+		let removedChildToParentOps = removedChildren
+			.filter(child => child.isUnique())
+			.map(payload => this.getOperation(OperationType.DELETE, this.getChildToParentRelationKey(payload), key.encodedData));
+
+		let removeChildrenOps = removedChildren.map(payload => this.getOperation(OperationType.DELETE, payload.encodedData, null));
+
+		let docUpdateOp = [this.getOperation(OperationType.PUT, key.encodedData, writeDoc(doc))];
+
+		ops = [...ops, ...removedChildToParentOps, ...removeChildrenOps, ...docUpdateOp];
+
+		let { ops: unsyncCollectionOp, collection: unsyncedCollection } = await this.getIndexCollectionUpdateOp(key, doc.pendingEdits.length > 0, removedChildren, this.unsyncedCollectionKey);
+
+		ops = [...ops, ...unsyncCollectionOp];
+
+		let { ops: changedCollectionOp, collection: changedCollection } = await this.getIndexCollectionUpdateOp(key, !doc.shadowSameAsMain(), removedChildren, this.changedCollectionKey);
+
+		ops = [...ops, ...changedCollectionOp];
+
+		await new Promise((resolve, reject) => {
+			this.db.batch(ops, DB_OPTIONS, (err) => {
+				if (err) reject(err); else resolve();
+			});
+		});
+
+		this[this.unsyncedCollectionKey] = unsyncedCollection;
+		this[this.changedCollectionKey] = changedCollection;
+
+		removedChildren.forEach(removedChild => {
+			delete this.parentToChildCache[removedChild.encodedDataHash];
+		})
+	}
+
+	/**
+	 * @param {Payload[]} keys
+	 * @returns {Promise.<void>}
+	 */
+	async markForSync(keys) {
+		let ops = keys.map(key => this.getOperation(OperationType.PUT, Buffer.concat([this.unsyncedCollectionKey, key.encodedData]), 1));
+
+		await new Promise((resolve, reject) => {
+			this.db.batch(ops, DB_OPTIONS, (err) => {
+				if (err) reject(err); else resolve();
+			});
+		});
+
+		if (this[this.unsyncedCollectionKey]) {
+			keys.forEach(key => {
+				if (this[this.unsyncedCollectionKey].findIndex(item => item.equals(key)) === -1) {
+					this[this.unsyncedCollectionKey].push(key);
+				}
+			})
+		}
+	}
+
+	/**
+	 * @param {Array<Payload>} keys
+	 * @param {boolean} [empty] when not found is created new one
+	 * @return {Promise<Array<DiffSyncDoc>>} documents
+	 */
+	getDocuments(keys, empty) {
+		return Promise.all(keys.map(key => this.get(key, empty)));
+	}
+
+	/**
+	 * @param {Array<Payload>} keys
+	 * @param {Array<DiffSyncDoc>} documents
+	 * @return {Promise}
+	 */
+	async setDocuments(keys, documents) {
+		for (let index = 0; index < keys.length; index++) {
+			await this.set(keys[index], documents[index]);
+		}
+	}
+
+	/**
+	 * @param {Payload} key
+	 * @param {boolean} belongs
+	 * @param {Array<Payload>} removedChildren
+	 * @param {Buffer} indexCollectionKey
+	 * @return {Array<Object>}
+	 */
+	async getIndexCollectionUpdateOp(key, belongs, removedChildren, indexCollectionKey) {
+		let collection = (await this.getIndexCollection(indexCollectionKey)).slice();
+		let idx = collection.findIndex(payload => payload.equals(key));
+
+		let ops = [];
+
+		if (belongs) {
+			ops.push(this.getOperation(OperationType.PUT, Buffer.concat([indexCollectionKey, key.encodedData]), 1));
+
+			if (idx === -1) {
+				collection.push(key);
+			}
+		} else {
+			ops.push(this.getOperation(OperationType.DELETE, Buffer.concat([indexCollectionKey, key.encodedData])));
+
+			if (idx !== -1) {
+				collection.splice(idx, 1);
+			}
+		}
+
+		removedChildren.forEach(removedChild => {
+			ops.push(this.getOperation(OperationType.DELETE, Buffer.concat([indexCollectionKey, removedChild.encodedData])));
+		});
+
+		collection = collection.filter(payload => removedChildren.findIndex(childPayload => payload.equals(childPayload)) === -1);
+
+		return { ops, collection };
+	}
+
+	/**
+	 * @param {Payload} key
+	 * @param {DiffSyncDoc} doc
+	 * @return {Promise<Array<Payload>, Array<Payload>} added and removed payloads
+	 */
+	async getUpdate(key, doc) {
+		let oldDoc = await this.get(key, true);
+
+		let oldChildren = oldDoc.main;
+		let newChildren = doc.main;
+
+		let added = newChildren
+			.filter(node => oldChildren.findIndex(childNode => childNode.samePayload(node)) === -1)
+			.map(node => node.payload);
+
+		let removed = oldChildren
+			.filter(node => newChildren.findIndex(childNode => childNode.samePayload(node)) === -1)
+			.map(node => node.payload);
+
+		return { added, removed };
+	}
+
+	/**
+	 * @private
+	 *
+	 * @param {Array<Payload>} payloads
+	 * @return {Promise<Array<Payload>>} payloads hierarchy
+	 */
+	cascade(payloads) {
+		let promises =[];
+
+		payloads
+			.filter(payload => payload.isUnique())
+			.forEach(key => {
+				let promise = this.get(key).then((doc) => {
+
+					if (!doc) {
+						return [];
+					}
+
+					let childrenPayloads = doc.main
+						.filter(node => node.payload.isUnique())
+						.map(node => node.payload);
+
+					return this.cascade(childrenPayloads);
+				});
+
+				promises.push(promise);
+			});
+
+		return Promise.all(promises).then((results) => {
+			return payloads.concat(...results);
+		});
+	}
+}
+
+module.exports = CloudDB;

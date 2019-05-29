@@ -1,0 +1,73 @@
+* {
+	-ms-user-select: none;
+	/*user-select: none;*/
+}
+
+html {
+	-ms-overflow-style: -ms-autohiding-scrollbar;
+}
+
+body {
+	margin: 0;
+	font-family: 'Segoe UI', 'Helvetica', sans-serif;
+	color: #999999;
+}
+
+#root {
+	height: 100vh;
+}
+
+.app {
+	height: 100%;
+	position: relative;
+}
+
+h2 {
+	margin: 0;
+	font-size: 2.25rem;
+	font-weight: bold;
+	letter-spacing: -.025em;
+	color: #000;
+}
+
+p {font-size: 24px;}
+li {list-style: none;}
+a {text-decoration: none; color: #000; user-select: none;}
+a:hover {cursor: pointer;}
+
+.center {text-align: center;}
+.pull-left {float: left;}
+.pull-right {float: right;}
+
+.pull-left a, .pull-right a {display: block;}
+
+.background-image {width: 100%; height: 100%; background-size: contain; background-repeat: no-repeat; background-position: center center;}
+
+.flex-wrapper {display: flex; align-items: center; justify-content: center; width: 100%; height: 100%;}
+.flex-item {flex: 1;}
+
+/* UWP edge fail */
+#root {overflow: hidden;}
+
+.container {height: 100%;}
+header {position: relative; overflow: hidden; height: 66px;}
+.content {height: calc(100vh - 66px);}
+
+form {position: relative; overflow: hidden; margin: 0 auto;}
+form label {display: block; margin-left: 5px; margin-bottom: 10px; font-weight: 600;}
+form input {
+	font-weight: 700;
+	width: 390px;
+	height: 38px;
+	padding-left: 20px;
+	margin-bottom: 30px;
+	border-radius: 10px;
+	border: 1px solid transparent;
+	background-color: #dcdcdc;
+	outline: none;
+}
+
+form input::-webkit-input-placeholder {color: #999999;}
+
+form div.error {position: absolute; left: 15px; bottom: 5px; color: red;}
+form.error input {border: 1px solid red;}
