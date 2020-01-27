@@ -16,7 +16,8 @@
     "dev": "concurrently --kill-others --success first \"cross-env NODE_ENV=development webpack --watch\" \"node ./app-scripts/sleep.js 19 && npm start\"",
     "debug": "concurrently --kill-others --success first \"cross-env NODE_ENV=development webpack --watch\" \"node ./app-scripts/sleep.js 19 && npm run start-debug\"",
     "start": "cross-env NODE_ENV=development electron .",
-    "start-debug": "cross-env NODE_ENV=development electron --inspect=5858 ."
+    "start-debug": "cross-env NODE_ENV=development electron --inspect=5858 .",
+    "devel": "cross-env NODE_ENV=development webpack --watch && npm start"
   },
   "devDependencies": {
     "@babel/core": "^7.5.5",
@@ -53,7 +54,7 @@
     "ignore-loader": "^0.1.2",
     "style-loader": "^0.23.1",
     "uglifyjs-webpack-plugin": "^2.2.0",
-    "webpack": "^4.38.0",
+    "webpack": "^4.41.5",
     "webpack-cli": "^3.3.6"
   },
   "dependencies": {
