@@ -4,7 +4,7 @@ Now buildable!!
 
 Since Wacom's support of this product appears to be waning, it would be nice to keep something alive. Kept node_modules since there's some necessary stuff in there.
 
-##Installation
+## Installation
 
 Make sure you've got webpack and friends.
 `npm install -g webpack webpack-cli cross-env electron Concurrently`
