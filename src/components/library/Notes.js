@@ -10,7 +10,6 @@ import Tooltip from 'rc-tooltip';
 import NewPageIcon from '../icons/library/NewPageIcon.svg';
 
 import * as actions from '../../actions/library';
-import {createNote} from '../../actions/edit';
 import {openWizard} from '../../actions/modals';
 
 import Menu from './notes/Menu';
@@ -97,8 +96,10 @@ class Notes extends Component {
 		if (ctrl) this.ctrl = true;
 
 		// ctrl + A
-		if (ctrl && e.keyCode == 65)
+		if (ctrl && e.keyCode == 65) {
 			this.props.selectNotes([].concat(...ContentManager.sections));
+			e.preventDefault();
+		}
 
 		if (Object.values(arrow).includes(e.keyCode)) {
 			let orderedNotes;
@@ -451,7 +452,7 @@ class Notes extends Component {
 		let initialIndex = ContentManager.sections.indexOf(selectedSection);
 		let pageSize = (initialIndex > 10) ? initialIndex+1 : 10;
 
-		return <ReactList ref="list" itemRenderer={::this.renderSection} pageSize={pageSize} initialIndex={initialIndex} length={ContentManager.sections.length} />;
+		return <ReactList ref="list" itemRenderer={::this.renderSection} pageSize={pageSize} initialIndex={initialIndex} length={ContentManager.sections.length} scrollParentGetter={global.getScrollParent} />;
 	}
 
 	renderSection(index, key) {
@@ -462,7 +463,9 @@ class Notes extends Component {
 			lastModified={this.props.lastModified}
 			content={ContentManager.sections[index]}
 			filterGroup={this.props.filterGroup}
+			editedNotes={this.props.editedNotes}
 			rotatedNotes={this.props.rotatedNotes}
+			editNote={this.props.editNote}
 
 			getContentRef={() => this.refs.content}
 			selectNotes={(ids) => {
@@ -477,6 +480,8 @@ function mapStateToProps(state) {
 	return {
 		modal: state.AppReducer.modal,
 
+		editedNotes: state.EditReducer.editedNotes,
+
 		// search
 		searchWindowVisible: state.LibraryReducer.searchWindowVisible,
 		filterTag: state.LibraryReducer.filterTag,
@@ -488,7 +493,7 @@ function mapStateToProps(state) {
 }
 
 function mapDispatchToProps(dispatch) {
-	return bindActionCreators({...actions, createNote, openWizard}, dispatch);
+	return bindActionCreators({...actions, openWizard}, dispatch);
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(Notes);

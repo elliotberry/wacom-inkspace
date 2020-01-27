@@ -1,5 +1,7 @@
 import uuid from 'uuid';
 
+import {push} from 'react-router-redux';
+
 import DeviceModel from '../../scripts/DeviceModel';
 import {Note} from '../../scripts/Note';
 import {comparator} from '../../scripts/utils';
@@ -414,6 +416,19 @@ function setBatteryCharge(batteryCharge) {
 	}
 }
 
+function createNote() {
+	return (dispatch, getState) => {
+		dispatch({type: ActionTypes.EDIT_CREATE_NOTE});
+		dispatch(push('/creation'));
+	}
+}
+
+function editNote() {
+	return (dispatch, getState) => {
+		dispatch(push('/creation'));
+	}
+}
+
 export {
 	setLastSync,
 	setDeviceStatus,
@@ -440,5 +455,8 @@ export {
 	setExportLanguage,
 	exportAsText,
 	saveRecognizedText,
-	closeExportAsTextModal
+	closeExportAsTextModal,
+
+	createNote,
+	editNote
 }

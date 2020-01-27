@@ -62,11 +62,11 @@ class LayerPane extends Component {
 										<a className={pasteIconClasses} onClick={::this.pasteLayer}><PasteIcon /></a>
 									</Tooltip>
 								</li>
-								{/*<li>
+								<li>
 									<Tooltip placement={'bottom'} destroyTooltipOnHide={true} overlay={<div ><FormattedMessage id={ 'btn.add' }/></div>}>
 										<a className="icon" onClick={this.props.layerAdd}><AddLayer /></a>
 									</Tooltip>
-								</li>*/}
+								</li>
 							</ul>
 						</div>
 					</div>

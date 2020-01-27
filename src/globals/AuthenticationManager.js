@@ -29,6 +29,7 @@ let AuthenticationManager = {
 	REFRESH_TIMEOUT_BEFORE_EXP: 10 * 60 * 1000,
 	CONNECTIVITY_CHECK_REFRESH_RATE: 5 * 60 * 1000,
 
+	onlineCallbacks: [],
 	afterSync: [],
 
 DEBUG: false,
@@ -70,6 +71,18 @@ DEBUG: false,
 			get: () => {
 				return syncing;
 			}
+		});
+
+		addEventListener("online", (e) => {
+			let callback;
+
+			while (callback = this.onlineCallbacks.shift())
+				callback();
+		});
+
+		addEventListener("offline", (e) => {
+			if (syncing)
+				NativeLinker.disconnectCloud();
 		});
 
 		return DBManager.get(DBManager.entities.PROFILE).then(value => {
@@ -163,7 +176,6 @@ DEBUG: false,
 				return response.text();
 			}).then((sessionID) => {
 				resolve(sessionID);
-				// resolve("abc" + sessionID.substring(3));
 			}).catch(e => reject(e));
 		});
 	},
@@ -232,9 +244,11 @@ if (AuthenticationManager.DEBUG) {
 		}).catch(error => {
 			console.warn(error);
 
-			if (!navigator.onLine || ![401, 404].includes(responseStatus)) {
+			if (!navigator.onLine) {
 				global.updateState({online: false});
-
+				this.onlineCallbacks.push(() => this.refreshAccessToken(callback));
+			}
+			else if (![401, 404].includes(responseStatus)) {
 				clearTimeout(this.refreshTimeoutID);
 				this.refreshTimeoutID = setTimeout(() => this.refreshAccessToken(callback), AuthenticationManager.CONNECTIVITY_CHECK_REFRESH_RATE);
 			}

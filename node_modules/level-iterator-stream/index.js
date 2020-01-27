@@ -38,15 +38,7 @@ ReadStream.prototype._read = function () {
 }
 
 ReadStream.prototype._destroy = function (err, callback) {
-  var self = this
-
   this._iterator.end(function (err2) {
     callback(err || err2)
-
-    // TODO when the next readable-stream (mirroring node v10) is out:
-    // remove this. Since nodejs/node#19836, streams always emit close.
-    process.nextTick(function () {
-      self.emit('close')
-    })
   })
 }

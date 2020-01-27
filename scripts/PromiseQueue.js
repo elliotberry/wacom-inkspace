@@ -1,6 +1,7 @@
 class PromiseQueue {
 	constructor() {
 		this.queue = Promise.resolve();
+		this.thenables = [];
 	}
 
 	/**
@@ -8,25 +9,25 @@ class PromiseQueue {
 	 * @param {Function} [resolve] callback after step execution
 	 * @param {int} [i] serial step
 	 *
-	 * @return {Promise} current queue step
+	 * @return {PromiseQueue} this queue
 	 */
-	process(thenable, resolve, i) {
-		this.queue = this.queue.then(() => {
-			if (resolve) {
-				return thenable().then(result => {
-					resolve(result, i);
-					return Promise.resolve();
-				});
-			}
+	then(thenable, resolve, i) {
+		this.thenables.push(thenable);
+
+		// this.queue = this.queue.then(thenable);
+
+		this.queue = this.queue.then((...args) => {
+			this.thenables.shift();
+
+			if (thenable.canceled)
+				return Promise.resolve();
 			else
-				return thenable();
+				return thenable(...args);
 		});
 
-		return this;
-	}
+		if (resolve)
+			this.then(result => resolve(result, i));
 
-	then(thenable) {
-		this.queue = this.queue.then(thenable);
 		return this;
 	}
 
@@ -35,26 +36,21 @@ class PromiseQueue {
 		return this;
 	}
 
-	/**
-	 * @param {Function<Promise>[]} collection
-	 * @param {Function} [resolve] callback after step execution
-	 *
-	 * @return {Promise} current queue step
-	 */
-	serial(collection, resolve) {
-		collection.forEach((thenable, i) => this.process(thenable, resolve, i));
-		return this.queue;
+	cancel() {
+		this.thenables.forEach(thenable => (thenable.canceled = true));
 	}
 
 	/**
 	 * @param {Function<Promise>[]} collection
-	 * @param {Function} [resolve] callback after step execution
+	 * @param {Function} [resolve] callback after step execution,
+	 *	resolve args are previous step result and step index
 	 *
 	 * @return {Promise} current queue step
 	 */
 	static serial(collection, resolve) {
 		let pq = new PromiseQueue();
-		return pq.serial(collection, resolve);
+		collection.forEach((thenable, i) => pq.then(thenable, resolve, i));
+		return pq.queue;
 	}
 }
 

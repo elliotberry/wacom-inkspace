@@ -19,8 +19,9 @@ let SmartPadBLE = require("../scripts/connectivity/SmartPadBLE");
 
 // console.suppress.push("REDUX");
 // console.suppress.push("APP");
-console.suppress.push("CLOUD");
+// console.suppress.push("CLOUD");
 console.suppress.push("CLOUD_SYNCING");
+console.suppress.push("CLOUD_EXPORTING");
 console.suppress.push("CLOUD_DOWNLOADING");
 // console.suppress.push("WORKER_GL");
 console.suppress.push("WORKER_DB");

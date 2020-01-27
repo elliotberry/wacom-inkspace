@@ -1,5 +1,3 @@
-import {push} from 'react-router-redux'
-
 import MenuManager from './MenuManager';
 
 import * as Modals from '../constants/Modals';
@@ -263,7 +261,7 @@ class MainMenuManager extends MenuManager {
 						click: () => {
 							// SETTINGS if open
 							this.store.dispatch(modalsAction.closeDialog());
-							this.store.dispatch(push("/creation"));
+							this.store.dispatch(libraryAction.editNote());
 						}
 					},
 					rotate: {

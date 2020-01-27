@@ -1,5 +1,5 @@
 import {updateIntl} from 'react-intl-redux';
-import {push, replace} from 'react-router-redux'
+// import {push, replace} from 'react-router-redux'
 
 import MenuManager from './MenuManager';
 
@@ -128,7 +128,7 @@ class ContextMenuManager extends MenuManager {
 			edit: {
 				label: LocalesManager.dictionary["menu.edit"],
 				enabled: ContentManager.selected.length === 1,
-				click: () => this.store.dispatch(push('/creation'))
+				click: () => this.store.dispatch(libraryAction.editNote())
 			},
 			rotate: {
 				label: LocalesManager.dictionary["menu.rotate"],

@@ -19,6 +19,22 @@ global.SmartPadUSB = require("../scripts/uwp/connectivity/SmartPadUSB");
 global.SmartPadBTC = require("../scripts/uwp/connectivity/SmartPadBTC");
 global.SmartPadBLE = require("../scripts/uwp/connectivity/SmartPadBLE");
 
+global.getScrollParent = function(reactList) {
+	const {axis} = reactList.props;
+	const OVERFLOW_KEYS = {x: 'overflowX', y: 'overflowY'};
+
+	let el = reactList.getEl();
+	const overflowKey = OVERFLOW_KEYS[axis];
+	let otherAxisOverflowKey = OVERFLOW_KEYS[axis == 'x' ? 'y' : 'x' ];
+
+	while (el = el.parentElement) {
+		if (['auto', 'scroll', 'overlay'].includes(window.getComputedStyle(el)[overflowKey]) || window.getComputedStyle(el)[otherAxisOverflowKey] == 'hidden')
+			return el;
+	}
+
+	return window;
+};
+
 DeviceManager.SKIP_DOWNLOAD = true;
 
 // console.suppress.push("UWP");

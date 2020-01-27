@@ -36,7 +36,7 @@ export default function createStore(reducer, preloadedState, enhancer) {
     throw new Error(
       'It looks like you are passing several store enhancers to ' +
         'createStore(). This is not supported. Instead, compose them ' +
-        'together to a single function'
+        'together to a single function.'
     )
   }
 
@@ -63,6 +63,13 @@ export default function createStore(reducer, preloadedState, enhancer) {
   let nextListeners = currentListeners
   let isDispatching = false
 
+  /**
+   * This makes a shallow copy of currentListeners so we can use
+   * nextListeners as a temporary list while dispatching.
+   *
+   * This prevents any bugs around consumers calling
+   * subscribe/unsubscribe in the middle of a dispatch.
+   */
   function ensureCanMutateNextListeners() {
     if (nextListeners === currentListeners) {
       nextListeners = currentListeners.slice()
@@ -224,6 +231,11 @@ export default function createStore(reducer, preloadedState, enhancer) {
     }
 
     currentReducer = nextReducer
+
+    // This action has a similiar effect to ActionTypes.INIT.
+    // Any reducers that existed in both the new and old rootReducer
+    // will receive the previous state. This effectively populates
+    // the new state tree with any relevant data from the old one.
     dispatch({ type: ActionTypes.REPLACE })
   }
 

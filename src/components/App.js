@@ -7,6 +7,7 @@ import {NotificationStack} from 'react-notification';
 
 import index from './index';
 import refresh from './refresh';
+import update from './update';
 import error from './error';
 import FTE from './FTE';
 import Terms from './Terms';
@@ -51,6 +52,11 @@ class App extends Component {
 
 		if (!this.checkWebGLSupported()) {
 			global.redirect("/error");
+			return;
+		}
+
+		if (NativeLinker.get("updateFound")) {
+			global.redirect("/update");
 			return;
 		}
 
@@ -173,7 +179,7 @@ class App extends Component {
 
 	onEnter() {
 		let page = this.props.history.location.pathname.substring(1);
-		if (page == "refresh" || page == "error" || (appPage && appPage == page)) return;
+		if (page == "refresh" || page == "error" || page == "update" || (appPage && appPage == page)) return;
 		if (page == "terms") page = "fte";
 
 		appPage = page;
@@ -194,6 +200,7 @@ class App extends Component {
 			<div className="app">
 				<Route exact path="/" component={index} />
 				<Route path="/refresh" component={refresh} />
+				<Route path="/update" component={update} />
 				<Route path="/error" component={error} />
 				<Route path="/fte" component={FTE} />
 				<Route path="/terms" component={Terms} />

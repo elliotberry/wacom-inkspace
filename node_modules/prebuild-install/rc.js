@@ -29,6 +29,8 @@ if (env.npm_config_argv) {
 // Get the configuration
 module.exports = function (pkg) {
   var pkgConf = pkg.config || {}
+  var sourceBuild = env.npm_config_build_from_source
+  var buildFromSource = sourceBuild === pkg.name || sourceBuild === 'true'
   var rc = require('rc')('prebuild-install', {
     target: pkgConf.target || env.npm_config_target || process.versions.node,
     runtime: pkgConf.runtime || env.npm_config_runtime || 'node',
@@ -39,7 +41,7 @@ module.exports = function (pkg) {
     force: false,
     verbose: false,
     prebuild: true,
-    compile: false,
+    compile: buildFromSource,
     path: '.',
     proxy: env.npm_config_proxy || env['HTTP_PROXY'],
     'https-proxy': env.npm_config_https_proxy || env['HTTPS_PROXY'],

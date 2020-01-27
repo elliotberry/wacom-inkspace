@@ -28,7 +28,9 @@ class Section extends Component {
 							visible={visible}
 							lastModified={this.props.lastModified}
 							filterGroup={this.props.filterGroup}
+							editedNotes={this.props.editedNotes}
 							rotatedNotes={this.props.rotatedNotes}
+							editNote={this.props.editNote}
 
 							getContentRef={this.props.getContentRef}
 							selectNotes={this.props.selectNotes}

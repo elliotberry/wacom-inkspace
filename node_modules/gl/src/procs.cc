@@ -127,4 +127,5 @@ void WebGLRenderingContext::initPointers(){
 	glGetVertexAttribPointerv=reinterpret_cast<PFNGLGETVERTEXATTRIBPOINTERVPROC>(eglGetProcAddress("glGetVertexAttribPointerv"));
 	glGetString=reinterpret_cast<PFNGLGETSTRINGPROC>(eglGetProcAddress("glGetString"));
 	glGetError=reinterpret_cast<PFNGLGETERRORPROC>(eglGetProcAddress("glGetError"));
+	glDrawBuffersEXT=reinterpret_cast<PFNGLDRAWBUFFERSEXTPROC>(eglGetProcAddress("glDrawBuffersEXT"));
 }

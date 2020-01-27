@@ -93,7 +93,7 @@ class SmartPadBTC extends GenericSmartPad {
 		this.updateStatus(SmartPadNS.Status.CONNECTING);
 
 		btc.findSerialPortChannel(device.address, (channel) => {
-console.log('Found RFCOMM channel for serial port on %s:', device.name, channel);
+console.log("Found RFCOMM channel, device name - %s on %s for serial port on %s", device.name, device.address, channel);
 
 			bluetooth.connect(device.address, channel, (error, conn) => {
 				if (error) {
@@ -244,12 +244,11 @@ let BTCScanner = {
 			this.owner.onScanStart();
 
 		btc.listPairedDevices(devices => {
-console.log(devices)
+console.log("listPairedDevices", devices)
 			devices.forEach(device => this.discover(device.address, device.name, device.services));
 
 			if (inquiry)
-				btc.inquire()
-				// setTimeout(() => btc.inquire(), 100);
+				btc.scan();
 			else
 				this.stop();
 		});
@@ -265,6 +264,7 @@ console.log(devices)
 	},
 
 	discover(address, name, services) {
+console.log("discover", address, name, services)
 		if (name.startsWith(BTCScanner.NAME_PREFIX)) {
 			let device = this.createDevice(address, name, services);
 			// if (this.owner.debug) console.log(`[BTCScanner] device ${device.name} found: ${device.address}, services:`, services);

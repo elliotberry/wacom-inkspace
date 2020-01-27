@@ -14,14 +14,12 @@ class NoteExporter {
 	}
 
 	exportNotes(notes, options) {
-		if (!options) options = {};
-
 		let result = {};
 
 		notes.forEach(noteData => {
 			let note = Note.fromJSON(DrawingToolsBox.pen.brush, noteData);
 
-			let data = GLCanvas.export(note, options);
+			let data = GLCanvas.export(note, options || {});
 			let paths = this.getNotePaths(note.id);
 
 			if (!fs.existsSync(paths.notes)) fs.mkdirSync(paths.notes);

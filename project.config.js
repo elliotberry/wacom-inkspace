@@ -42,6 +42,7 @@ let config = {
 
 	debug: false,
 	debugDevice: false,
+	debugCloud: false,
 
 	// CONSOLE, FILE, BOTH
 	loggerType: "CONSOLE",
@@ -63,7 +64,7 @@ let config = {
 
 	syncSelect: {
 		LOCAL: {
-			syncUrl: "ws://10.185.3.130:5000/sync"
+			syncUrl: "ws://127.0.0.1:5000/sync"
 		},
 
 		STAGING: {
@@ -76,6 +77,16 @@ let config = {
 	},
 
 	hwrSelect: {
+		LOCAL: {
+			searchURL: "https://stage-inkspace.wacom.com/api/export/textsearch",
+			export: {
+				txt: "https://stage-inkspace.wacom.com/api/export/text",
+				doc: "https://stage-inkspace.wacom.com/api/export/doc",
+				videoRequest: "https://stage-inkspace.wacom.com/api/export/request-video",
+				video: "https://stage-inkspace.wacom.com/video/{TaskID}"
+			}
+		},
+
 		STAGING: {
 			searchURL: "https://stage-inkspace.wacom.com/api/export/textsearch",
 			export: {
@@ -90,6 +101,7 @@ let config = {
 			searchURL: "https://inkspace.wacom.com/api/export/textsearch",
 			export: {
 				txt: "https://inkspace.wacom.com/api/export/text",
+				// txt: "http://10.185.6.22:5000/export/text",
 				doc: "https://inkspace.wacom.com/api/export/doc",
 				videoRequest: "https://inkspace.wacom.com/api/export/request-video",
 				video: "https://inkspace.wacom.com/video/{TaskID}"
@@ -107,6 +119,16 @@ let config = {
 	},
 
 	authenticationSelect: {
+		LOCAL: {
+			secret: "pChcbN*}y*T(QLqGIF|mhtROvdCzVrQV",
+			requestSessionUrl: "https://stage-accounts-inkspace.wacom.com/wacom-id-ui/api/request-session",
+			loginUrl: "https://stage-accounts-inkspace.wacom.com/wacom-id-ui/",
+			queryAccessTokenUrl: "https://stage-accounts-inkspace.wacom.com/wacom-id-ui/api/get-access-token",
+			createAssetUrl: "https://stage-accounts-inkspace.wacom.com/wacom-id-ui/api/create-asset",
+			refreshAccessTokenUrl: "https://stage-inkspace.wacom.com/api/refreshserver/refresh-access-token",
+			accountUrl: "https://account.wacom.com"
+		},
+
 		STAGING: {
 			secret: "pChcbN*}y*T(QLqGIF|mhtROvdCzVrQV",
 			requestSessionUrl: "https://stage-accounts-inkspace.wacom.com/wacom-id-ui/api/request-session",

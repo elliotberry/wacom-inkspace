@@ -6,6 +6,10 @@
 .edit .progress-bar-surface {background-color: white;}
 .edit .edit-progress-bar {width: 100%; max-width: 500px; margin: 0 15px;}
 
+.edit .loading .progress-bar {width: 80px; height: 80px; margin: 0 auto;}
+.edit .loading .details {font-size: 25px; line-height: 20px; color: #717174; margin-top: 25px;}
+.edit .loading .subdetails {font-size: 14px; line-height: 17px; color: #717174; text-align: center; margin-top: 15px;}
+
 .layer-pane {position: absolute; left: 0; bottom: 0; width: 100%; height: 230px; background-color: rgba(220, 220, 220, 0.9);}
 .layer-pane {transition-property: all; transition-duration: 0.5s; transition-timing-function: cubic-bezier(0, 1, 0.5, 1);}
 

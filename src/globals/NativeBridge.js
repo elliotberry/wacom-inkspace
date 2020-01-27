@@ -24,12 +24,15 @@ remote.powerMonitor.on("resume", () => {
 remote.powerMonitor.on("lock-screen", () => {
 	if (debug) {
 		let d = new Date();
-		console.info("The system lock screen", d.getHours().pad(2) + ":" + d.getMinutes().pad(2) + ":" + d.getSeconds().pad(2));
+		console.info("The system lock screen in", d.getHours().pad(2) + ":" + d.getMinutes().pad(2) + ":" + d.getSeconds().pad(2));
 	}
 });
 
 remote.powerMonitor.on("unlock-screen", () => {
-	if (debug) console.info("The system unlock screen")
+	if (debug) {
+		let d = new Date();
+		console.info("The system unlock screen in", d.getHours().pad(2) + ":" + d.getMinutes().pad(2) + ":" + d.getSeconds().pad(2));
+	}
 
 	remote.powerMonitor.querySystemIdleState(60, idleState => console.info("System state:", idleState))
 	remote.powerMonitor.querySystemIdleTime(idleTime => console.info("System idle time:", idleTime))
@@ -155,6 +158,10 @@ let NativeLinker = {
 		ipcRenderer.send("cloud-sync", message || {});
 	},
 
+	disconnectCloud: function(message) {
+		ipcRenderer.send("cloud-disconnect", message || {});
+	},
+
 	send: function(event) {
 		ipcRenderer.send(event);
 	},
@@ -194,12 +201,14 @@ let UATracker = {
 	}
 };
 
+const MenuItem = remote.MenuItem;
+
 global.UIManager = UIManager;
 global.IOManager = IOManager;
 global.PowerManager = PowerManager;
 global.NativeLinker = NativeLinker;
 global.Menu = Menu;
-global.MenuItem = remote.MenuItem;
+global.MenuItem = MenuItem;
 // global.MainMenuManager = MainMenuManager;
 global.UATracker = UATracker;
 

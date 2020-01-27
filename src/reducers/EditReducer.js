@@ -14,6 +14,7 @@ let defaultState = {
 	previews: [],
 	activeTool: '',
 	splitScrubVisible: false,
+	editedNotes: [],
 	saving: false,
 	splitMode: null,
 	splitCanceled: false,
@@ -29,8 +30,18 @@ export default function EditReducer(state = defaultState, action) {
 	switch (action.type) {
 		case ActionTypes.UPDATE_STATE_EDIT: return {...state, ...action.body}
 
-		case ActionTypes.EDIT_START_SAVE: return {...state, saving: true};
-		case ActionTypes.EDIT_END_SAVE: return {...state, lastModifiedDate: state.note.lastModifiedDate, saving: false};
+		case ActionTypes.EDIT_START_SAVE: {
+			let {editedNotes} = state;
+			editedNotes.push(state.note.id);
+
+			return {...state, lastModifiedDate: state.note.lastModifiedDate, saving: true, editedNotes: editedNotes.slice()};
+		}
+		case ActionTypes.EDIT_END_SAVE: {
+			let {editedNotes} = state;
+			editedNotes.remove(action.body);
+
+			return {...state, saving: false, editedNotes: editedNotes.slice()};
+		}
 
 		case ActionTypes.EDIT_CREATE_NOTE: return {...state, newNote: true};
 

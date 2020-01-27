@@ -1,5 +1,9 @@
 # headless-gl change log
 
+## 4.2.2
+
+ * WEBGL_draw_buffers extension support
+
 ## 4.1.1
 
 * OES_element_index_uint extension support

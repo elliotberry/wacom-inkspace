@@ -87,6 +87,9 @@
                     'OptimizeReferences': 1, # /OPT:NOREF
                     'EnableCOMDATFolding': 1, # /OPT:NOICF
                     'LinkIncremental': 2, # /INCREMENTAL
+                    'AdditionalOptions': [
+                      '/LTCG:OFF',
+                    ]
                   }
                 },
                 'msvs_configuration_attributes':

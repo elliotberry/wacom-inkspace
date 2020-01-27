@@ -68,6 +68,10 @@ let WILL = {
 				this.endStroke(this.getInputPoint(e))
 			},
 
+			pointercancel: (e) => {
+				this.abort();
+			},
+
 			wheel: (e) => {
 				e.preventDefault();
 				this.context2D.zoom(e);
@@ -309,6 +313,7 @@ let WILL = {
 			this.canvas.surface.addEventListener("pointerdown", this.events.pointerdown);
 			document.addEventListener("pointermove", this.events.pointermove);
 			document.addEventListener("pointerup", this.events.pointerup);
+			document.addEventListener("pointercancel", this.events.pointercancel);
 
 			this.strokeInputEnabled = true;
 		}
@@ -319,6 +324,7 @@ let WILL = {
 			this.canvas.surface.removeEventListener("pointerdown", this.events.pointerdown);
 			document.removeEventListener("pointermove", this.events.pointermove);
 			document.removeEventListener("pointerup", this.events.pointerup);
+			document.removeEventListener("pointercancel", this.events.pointercancel);
 
 			this.strokeInputEnabled = false;
 		}

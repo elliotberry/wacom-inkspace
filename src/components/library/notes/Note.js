@@ -7,8 +7,6 @@ import images from '../../../images';
 
 import ReactUtils from '../../../globals/ReactUtils';
 
-const project = require("../../../../project.config.js");
-
 class Note extends Component {
 	constructor(props) {
 		super(props);
@@ -91,14 +89,12 @@ class Note extends Component {
 		if (state.selected != ContentManager.isSelected(props.id))
 			update.selected = !state.selected;
 
-		if (props.rotatedNotes != state.rotatedNotes) {
-			update.rotatedNotes = props.rotatedNotes;
+		update.rotatedNotes = props.rotatedNotes;
 
-			if (props.rotatedNotes.includes(props.id))
-				update.preloader = true;
-			else if (state.rotatedNotes.includes(props.id))
-				update.preloader = false;
-		}
+		if (props.rotatedNotes.includes(props.id))
+			update.preloader = true;
+		else if (state.rotatedNotes.includes(props.id))
+			update.preloader = false;
 
 		return update;
 	}
@@ -111,8 +107,14 @@ class Note extends Component {
 		let loader;
 		let image;
 
-		if (this.state.preloader)
+		let onDoubleClick = this.props.editNote;
+		let onContextMenu = ::this.onContextMenu;
+
+		if (this.state.preloader || this.props.editedNotes.includes(this.props.id)) {
 			loader = <LoadingIcon />;
+			onDoubleClick = null;
+			onContextMenu = null;
+		}
 		else {
 			if (this.props.visible)
 				image = {backgroundImage: `url("${note.getThumbSrc()}")`};
@@ -128,7 +130,7 @@ class Note extends Component {
 		}
 
 		return (
-			<div ref={note.id} id={note.id} className={className} draggable="true" onDragStart={::this.dragStart} onClick={::this.selectItem} onDoubleClick={() => global.redirect('/creation')} onContextMenu={::this.onContextMenu}>
+			<div ref={note.id} id={note.id} className={className} draggable="true" onDragStart={::this.dragStart} onClick={::this.selectItem} onDoubleClick={onDoubleClick} onContextMenu={onContextMenu}>
 				<div className="thumb background-image" style={image}>{loader}</div>
 				<div className="thumb-title">
 					<FormattedDate value={date} year='numeric' month='short' day='numeric'/>

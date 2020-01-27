@@ -11,6 +11,7 @@ body {
 	margin: 0;
 	font-family: 'Segoe UI', 'Helvetica', sans-serif;
 	color: #999999;
+	touch-action: none;
 }
 
 #root {

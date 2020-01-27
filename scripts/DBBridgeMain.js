@@ -14,6 +14,7 @@ class DBBridgeMain extends DBBridge {
 
 		ipcMain.on("db-manager", this.redirect.bind(this));
 		ipcMain.on("cloud-sync", this.syncWithCloud.bind(this));
+		ipcMain.on("cloud-disconnect", this.disconnectCloud.bind(this));
 		ipcMain.on("store-update", this.connectWithStore.bind(this));
 		ipcMain.on("data-migration", this.processDataMigration.bind(this));
 
@@ -40,6 +41,10 @@ class DBBridgeMain extends DBBridge {
 			let proxyAddress = proxy.split(";")[0].replace("DIRECT", "").replace("PROXY", "").trim();
 			this.sendCallback("syncWithCloud", [message.accessToken, proxyAddress]);
 		});
+	}
+
+	disconnectCloud(event) {
+		this.sendCallback("disconnectCloud", []);
 	}
 
 	connectDataMigration() {

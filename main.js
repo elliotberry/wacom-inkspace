@@ -25,9 +25,6 @@ global.mainWindow = null
 let powerSaverID = null
 let mainWindowSize = null
 
-if (debug)
-	app.commandLine.appendSwitch("ignore-gpu-blacklist")
-
 crashReporter.start({
 	productName: "InkspaceDesktop",
 	companyName: "Wacom Co LTD",
@@ -47,13 +44,15 @@ function initialize() {
 
 		connectDB().then(() => {
 			installExtensions()
-			createWindow()
-			autoUpdater.initialize()
+
+			// createWindow()
+			autoUpdater.onCheckComplete = createWindow
+			autoUpdater.init()
 			// initTray()
 
 			powerSaverID = powerSaveBlocker.start("prevent-app-suspension")
 			if (debug) console.info("[START] power-saver-id:", powerSaverID)
-		})
+		}).catch(console.error)
 	})
 
 	app.on("activate", function () {
@@ -326,6 +325,17 @@ switch (process.argv[1]) {
 		})
 
 		break
+	case "--ignore-certificate-errors":
+		// app.commandLine.appendSwitch("ignore-certificate-errors")
+		process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
+
+		initialize()
+		break
+	// case "--ignore-gpu-blacklist":
+	// 	app.commandLine.appendSwitch("ignore-gpu-blacklist")
+
+	// 	initialize()
+	// 	break
 	default:
 		initialize()
 }

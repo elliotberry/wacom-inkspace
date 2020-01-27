@@ -1,7 +1,6 @@
-import {push} from 'react-router-redux'
-
 import * as Modals from '../../src/constants/Modals';
 
+import * as libraryAction from '../../src/actions/library';
 import * as editActions from '../../src/actions/edit';
 import * as modalsAction from '../../src/actions/modals';
 
@@ -32,7 +31,7 @@ class MainMenuManager {
 							cancel = true;
 
 							store.dispatch(modalsAction.closeDialog());
-							store.dispatch(push("/creation"));
+							store.dispatch(libraryAction.editNote())
 						}
 					}
 

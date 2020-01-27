@@ -159,6 +159,8 @@ NAN_MODULE_INIT(Init) {
   JS_GL_METHOD("frontFace", FrontFace);
   JS_GL_METHOD("sampleCoverage", SampleCoverage);
   JS_GL_METHOD("destroy", Destroy);
+  JS_GL_METHOD("drawBuffersWEBGL", DrawBuffersWEBGL);
+  JS_GL_METHOD("extWEBGL_draw_buffers", EXTWEBGL_draw_buffers);
 
   // Windows defines a macro called NO_ERROR which messes this up
   Nan::SetPrototypeTemplate(
@@ -477,7 +479,7 @@ NAN_MODULE_INIT(Init) {
   Nan::Set(
       target
     , Nan::New<v8::String>("WebGLRenderingContext").ToLocalChecked()
-    , webgl_template->GetFunction());
+    , Nan::GetFunction(webgl_template).ToLocalChecked());
 
   //Export helper methods for clean up and error handling
   Nan::Export(target, "cleanup", WebGLRenderingContext::DisposeAll);

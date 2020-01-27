@@ -1,6 +1,6 @@
 import uuid from 'uuid';
 
-import {push} from 'react-router-redux'
+import {push} from 'react-router-redux';
 
 import {addNotification} from './app';
 import {filterByTag} from './library';
@@ -11,6 +11,9 @@ import * as Modals from '../constants/Modals';
 
 import {Note, Layer} from '../../scripts/Note';
 import PromiseQueue from '../../scripts/PromiseQueue';
+
+const EMPTY_LANDSCAPE_THUMB = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAHUAAABQCAYAAAAnZTo5AAAAO0lEQVR4Ae3BMQEAAADCIPunXgsvYAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAFwFkpAAAcCmfVcAAAAASUVORK5CYII=";
+const EMPTY_PORTRAIT_THUMB = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAFAAAAB1CAYAAADZcGYoAAAAO0lEQVR4Ae3BMQEAAADCIPunXg0PYAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPwJkrUAARgK5x4AAAAASUVORK5CYII=";
 
 let queue = new PromiseQueue();
 
@@ -44,13 +47,6 @@ function updateLayer(strokes, initialDate) {
 	});
 
 	return {creationDate, edit};
-}
-
-function createNote() {
-	return (dispatch, getState) => {
-		dispatch({type: ActionTypes.EDIT_CREATE_NOTE});
-		dispatch(push('/creation'));
-	}
 }
 
 function initEditMode() {
@@ -137,15 +133,13 @@ function saveNote() {
 				else
 					return Promise.resolve();
 			}).then(() => {
-				dispatch({type: ActionTypes.EDIT_END_SAVE});
+				dispatch({type: ActionTypes.EDIT_END_SAVE, body: note.id});
 				dispatch(addNotification("notification.edit.noteSaved"));
 
 				UAManager.edit("Edit Content", "Save Canvas");
 
 				if (AppManager.closing)
 					AppManager.confirmSaveNote();
-				else if (modal == Modals.SAVE_CHANGES)
-					dispatch(push('/library'));
 			});
 		}
 	}
@@ -176,8 +170,8 @@ function transferToLibrary() {
 
 		if (note.lastModifiedDate != lastModifiedDate)
 			dispatch(openDialog(Modals.SAVE_CHANGES));
-		else if (!saving)
-			dispatch(push('/library'));
+		else
+			dispatch(closeNote());
 	}
 }
 
@@ -390,7 +384,7 @@ function applySplit() {
 					dispatch({type: ActionTypes.EDIT_APPLY_SPLIT_NOTE});
 					dispatch(addNotification('notification.edit.noteSplit'));
 
-					dispatch({type: ActionTypes.EDIT_END_SAVE});
+					dispatch({type: ActionTypes.EDIT_END_SAVE, body: note.id});
 					dispatch(addNotification("notification.edit.noteSaved"));
 
 					WILL.enableZoomAndPan();
@@ -413,9 +407,23 @@ function generatePreviews() {
 	}
 }
 */
+function generatePreviewsPane() {
+	return (dispatch, getState) => {
+		let {note, previews} = getState().EditReducer;
+		let emptyThumb = note.isLandscape() ? EMPTY_LANDSCAPE_THUMB : EMPTY_PORTRAIT_THUMB;
+
+		note.layers.forEach((layer, index) => {
+			previews[index] = (layer.strokes.length == 0) ? emptyThumb : null;
+		});
+
+		dispatch({type: ActionTypes.EDIT_UPDATE_PREVIEWS, body: previews});
+	}
+}
+
 function updatePreview(...indexes) {
 	return (dispatch, getState) => {
-		let {note} = getState().EditReducer;
+		let {note, previews} = getState().EditReducer;
+		let emptyThumb = note.isLandscape() ? EMPTY_LANDSCAPE_THUMB : EMPTY_PORTRAIT_THUMB;
 /*
 		previews[index] = WILL.context2D.layers[index].toDataURL();
 		dispatch({type: ActionTypes.EDIT_UPDATE_PREVIEWS, body: previews});
@@ -431,6 +439,12 @@ function updatePreview(...indexes) {
 			let preview = new Note({size: note.size, transform: note.transform, locale: note.locale, layers: [note.layers[index]]});
 
 			queue.then(() => {
+				if (note.layers[index].strokes.length == 0) {
+					let base64Image = emptyThumb.substring("data:image/png;base64,".length);
+					return base64Image;
+				}
+				else
+					return DBManager.exportLayerPreview(preview);
 				return DBManager.exportLayerPreview(preview);
 			}).then(base64Image => {
 				let image = "data:image/png;base64," + base64Image;
@@ -456,9 +470,9 @@ function layerAdd() {
 		let targetLayer = note.layers.length - 1;
 
 		if (note.isLandscape())
-			previews.push("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAHUAAABQCAYAAAAnZTo5AAAAO0lEQVR4Ae3BMQEAAADCIPunXgsvYAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAFwFkpAAAcCmfVcAAAAASUVORK5CYII=");
+			previews.push(EMPTY_LANDSCAPE_THUMB);
 		else
-			previews.push("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAFAAAAB1CAYAAADZcGYoAAAAO0lEQVR4Ae3BMQEAAADCIPunXg0PYAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPwJkrUAARgK5x4AAAAASUVORK5CYII=");
+			previews.push(EMPTY_PORTRAIT_THUMB);
 
 		dispatch({type: ActionTypes.EDIT_UPDATE_PREVIEWS, body: previews});
 		dispatch({type: ActionTypes.EDIT_PASTE_LAYER, body: targetLayer});
@@ -582,12 +596,16 @@ function layerMergePrevious(targetLayer) {
 
 function closeNote() {
 	return (dispatch, getState) => {
-		dispatch(push('/library'))
+		if (AppManager.closing)
+			AppManager.confirmSaveNote();
+		else {
+			queue.cancel();
+			dispatch(push('/library'));
+		}
 	}
 }
 
 export {
-	createNote,
 	initEditMode,
 	saveNote,
 	toggleSaveButton,
@@ -606,6 +624,7 @@ export {
 	setSplitIndex,
 
 	// generatePreviews,
+	generatePreviewsPane,
 	updatePreview,
 
 	layerAdd,

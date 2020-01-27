@@ -42,7 +42,7 @@ let messanger = {
 		stroke.path.points = data.points;
 		stroke.bezierPath = new Module.BezierPath(data.segments, data.color);
 
-		if (!this.affectedLayers.includes(this.index[data.strokeID].layerIndex)) this.affectedLayers.push(this.index[data.strokeID].layerIndex);
+		if (!this.affectedLayers.includes(index.layerIndex)) this.affectedLayers.push(index.layerIndex);
 		delete this.index[data.strokeID];
 
 		WILL.updateBezierProgress(stroke, index.layerIndex, index.strokeIndex);

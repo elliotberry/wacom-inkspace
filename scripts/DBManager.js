@@ -18,7 +18,7 @@ const utils = require("./utils");
 const ThreadBridge = require("./ThreadBridge");
 const {common : consoleBridge} = require("./ConsoleBridge");
 
-const syncConfig = require("../project.config.js")["sync"];
+const project = require("../project.config.js");
 
 let storeComm;
 let cloudStorage;
@@ -139,45 +139,43 @@ class DBManager {
 	getNotes(ids, serializeOutput, cloud) {
 		if (!ids) ids = [];
 
-		return this.notesQueue.process(() => {
+		return this.notesQueue.then(() => {
 			return cloudStorage.getSequence(cloudStorage.root)
-				.then(documents => {
-					if (ids.length)
-						return documents.filter(doc => ids.indexOf(CloudUtils.bufferToUuid(doc.payload.content)) != -1);
-					else
-						return documents;
-				})
-				.then(documents => {
-					return Promise.all(documents.map(document => {
-						return cloudStorage.getSequence(document.payload).then(pages => {
-							let noteID = CloudUtils.bufferToUuid(document.payload.content);
+		}).then(documents => {
+			if (ids.length)
+				return documents.filter(doc => ids.indexOf(CloudUtils.bufferToUuid(doc.payload.content)) != -1);
+			else
+				return documents;
+		}).then(documents => {
+			return Promise.all(documents.map(document => {
+				return cloudStorage.getSequence(document.payload).then(pages => {
+					let noteID = CloudUtils.bufferToUuid(document.payload.content);
 
-							if (pages.length) {
-								let stream = document.attrs.get("stream");
+					if (pages.length) {
+						let stream = document.attrs.get("stream");
 
-								if (!stream || stream == "mate")
-									return CloudNote.fromCloudNodes(document, pages[0]);
-								else {
-									// if (cloud)
-									// 	console.info(noteID, "stream -", stream);
+						if (!stream || stream == "mate")
+							return CloudNote.fromCloudNodes(document, pages[0]);
+						else {
+							// if (cloud)
+							// 	console.info(noteID, "stream -", stream);
 
-									return null;
-								}
-							}
-							else {
-								if (cloud)
-									missingPagesNotes.push(noteID);
-								else if (debug)
-									console.warn(new Error(`[CLOUD] note with no pages detected: ${noteID}`));
+							return null;
+						}
+					}
+					else {
+						if (cloud)
+							missingPagesNotes.push(noteID);
+						else if (debug)
+							console.warn(new Error(`[CLOUD] note with no pages detected: ${noteID}`));
 
-								return null;
-							}
-						});
-					}))
-				})
-				.then(notes => notes.filter(note => !!note))
-				.then(notes => (serializeOutput ? notes.map(note => note.toJSON()) : notes))
-		});
+						return null;
+					}
+				});
+			}))
+		})
+		.then(notes => notes.filter(note => !!note))
+		.then(notes => (serializeOutput ? notes.map(note => note.toJSON()) : notes))
 	}
 
 	getNote(id) {
@@ -201,7 +199,7 @@ class DBManager {
 	}
 
 	editNotes(notes, options) {
-		return this.notesQueue.process(() => {
+		return this.notesQueue.then(() => {
 			return new Promise((resolve, reject) => {
 				this.exportNotes(notes, options, (notesLayers) => {
 					notes = notes.map(noteData => {
@@ -351,20 +349,20 @@ class DBManager {
 	}
 
 	deleteNotes(ids) {
-		return this.notesQueue.process(() => {
-			return cloudStorage.getSequence(cloudStorage.root).then(documents => {
-				ids.map(id => Payload.createUnique(CloudUtils.uuidToBuffer(id))).forEach(payload => {
-					let docIndex = documents.findIndex(doc => doc.payload.equals(payload));
+		return this.notesQueue.then(() => {
+			return cloudStorage.getSequence(cloudStorage.root);
+		}).then(documents => {
+			ids.map(id => Payload.createUnique(CloudUtils.uuidToBuffer(id))).forEach(payload => {
+				let docIndex = documents.findIndex(doc => doc.payload.equals(payload));
 
-					if (docIndex != -1)
-						documents.splice(docIndex, 1);
-				});
+				if (docIndex != -1)
+					documents.splice(docIndex, 1);
+			});
 
-				return cloudStorage.setSequence(cloudStorage.root, documents);
-			}).then(() => {
-				this.deleteNotesData(ids);
-			}).catch(console.error);
-		});
+			return cloudStorage.setSequence(cloudStorage.root, documents);
+		}).then(() => {
+			this.deleteNotesData(ids);
+		}).catch(console.error);
 	}
 
 	deleteNotesData(ids) {
@@ -426,9 +424,9 @@ class DBManager {
 		let globalsChange = null;
 		let groupsPayload = CloudEntity.getPayload("groups");
 
-		cloudStorage = new CloudStorage(this.db.conn, syncConfig.syncUrl);
+		cloudStorage = new CloudStorage(this.db.conn, project.sync.syncUrl);
 		cloudStorage.root = reservedPayloads.mate;
-		// cloudStorage.setDebugMode(true);
+		cloudStorage.setDebugMode(project.debugCloud);
 
 		cloudStorage.on("CloudOpen", () => {
 			if (debug) console.log("[CLOUD] OPEN");
@@ -443,12 +441,12 @@ class DBManager {
 		cloudStorage.on("CloudSyncSequenceBegin", (event) => {
 			if (debug) {
 				let key = event.parent.equals(cloudStorage.root)?event.parent.encodedData:CloudUtils.bufferToUuid(event.parent.content);
-				console.log(`[CLOUD] SYNC SEQUENCE BEGIN (${key}, ${event.update})`);
+				console.log(`[CLOUD_SYNCING] SYNC SEQUENCE BEGIN (${key}, ${event.update})`);
 			}
 		});
 
 		cloudStorage.on("CloudSyncSequenceFinished", (event) => {
-			if (debug) console.log(`[CLOUD] SYNC SEQUENCE FINISHED (${event.changes.length})`);
+			if (debug) console.log(`[CLOUD_SYNCING] SYNC SEQUENCE FINISHED (${event.changes.length})`);
 			if (!event.changes.length) return;
 
 			if (event.parent.equals(cloudStorage.root)) {
@@ -464,7 +462,7 @@ class DBManager {
 					console.log("===================== DOCUMENTS UPDATE =====================");
 				}
 
-				cloudQueue.process(this.get.bind(this, DBManager.entities.QUEUE)).then(queue => {
+				cloudQueue.then(this.get.bind(this, DBManager.entities.QUEUE)).then(queue => {
 					if (!queue) queue = [];
 					queue.push(change);
 
@@ -516,11 +514,11 @@ class DBManager {
 		});
 
 		cloudStorage.on("CloudSyncFinished", (event) => {
-			if (debug) console.log(`[CLOUD] SYNC FINISHED (${event.successful}, ${exporting})`);
+			if (debug) console.log(`[CLOUD_SYNCING] SYNC FINISHED (${event.successful}, ${exporting})`);
 
 			if (globalsChange) {
 				globalsChange.update.forEach(type => {
-					cloudQueue.process(this.getEntity.bind(this, type.substring(2, type.length - 2))).then(entity => {
+					cloudQueue.then(this.getEntity.bind(this, type.substring(2, type.length - 2))).then(entity => {
 						storeComm.send({action: "ENTITY_UPDATE", body: entity});
 					});
 				});
@@ -542,7 +540,7 @@ class DBManager {
 
 			let change;
 
-			cloudQueue.process(this.get.bind(this, DBManager.entities.QUEUE)).then(queue => {
+			cloudQueue.then(this.get.bind(this, DBManager.entities.QUEUE)).then(queue => {
 				change = (queue && queue[0])?queue[0]:{update: [], remove: []};
 
 				if (change.update.length + change.remove.length > 0)
@@ -581,7 +579,7 @@ class DBManager {
 
 					/*if (globalsChange) {
 						globalsChange.update.forEach(type => {
-							cloudQueue.process(this.getEntity.bind(this, type.substring(2, type.length - 2))).then(entity => {
+							cloudQueue.then(this.getEntity.bind(this, type.substring(2, type.length - 2))).then(entity => {
 								storeComm.send({action: "ENTITY_UPDATE", body: entity});
 							});
 						});
@@ -631,17 +629,19 @@ class DBManager {
 
 							if (!hasStrokes) {
 								console.warn(new Error(`[CLOUD] note with missing strokes detected: ${noteData.id}`));
-								missingLayersNotes.push(noteData.id);
+								// missingLayersNotes.push(noteData.id);
+								missingLayersNotes.push(`${noteData.id} (${noteData.pageId})`);
 							}
 						}
 						else {
 							console.warn(new Error(`[CLOUD] note with missing layers detected: ${noteData.id}`));
-							missingLayersNotes.push(noteData.id);
+							// missingLayersNotes.push(noteData.id);
+							missingLayersNotes.push(`${noteData.id} (${noteData.pageId})`);
 						}
 
 						// if (!hasLayers || !hasStrokes) {
 						if (!hasLayers) {
-							cloudQueue.process(this.get.bind(this, DBManager.entities.QUEUE)).then(queue => {
+							cloudQueue.then(this.get.bind(this, DBManager.entities.QUEUE)).then(queue => {
 								if (!queue) return Promise.reject("Cloud queue is not found");
 
 								let change = queue[0];
@@ -653,15 +653,15 @@ class DBManager {
 						else {
 							if (hasEmptyLayer) {
 								console.warn(new Error(`[CLOUD] note with empty layer detected: ${noteData.id}`));
-								console.info(noteData.id, " -> empty layer found");
+								console.info(noteData.id, "-> empty layer found");
 							}
 
-							if (debug) console.log(`[CLOUD] exporting ${noteData.id} started`);
+							if (debug) console.log(`[CLOUD_EXPORTING] exporting ${noteData.id} started`);
 
 							this.exportNotes([noteData], {}, () => {
-								if (debug) console.log(`[CLOUD] exporting ${noteData.id} completed`);
+								if (debug) console.log(`[CLOUD_EXPORTING] exporting ${noteData.id} completed`);
 
-								cloudQueue.process(this.get.bind(this, DBManager.entities.QUEUE)).then(queue => {
+								cloudQueue.then(this.get.bind(this, DBManager.entities.QUEUE)).then(queue => {
 									if (!queue) return Promise.reject("Cloud queue is not found");
 
 									let change = queue[0];
@@ -675,7 +675,7 @@ class DBManager {
 						}
 					}
 					else {
-						cloudQueue.process(this.get.bind(this, DBManager.entities.QUEUE)).then(queue => {
+						cloudQueue.then(this.get.bind(this, DBManager.entities.QUEUE)).then(queue => {
 							if (queue && queue.length) {
 								queue.shift();
 
@@ -711,7 +711,7 @@ class DBManager {
 				throw reason;
 		});
 
-		if (!buffer)
+		if (!buffer || !buffer.length)
 			return;
 
 		const data = EncoderDecoder.readPayloadSequence(buffer).map(payload => payload.encodedData);
@@ -722,6 +722,10 @@ class DBManager {
 		}
 
 		await this.db.conn.del(buffer);
+	}
+
+	disconnectCloud() {
+		cloudStorage.close();
 	}
 
 	syncWithCloud(accessToken, proxyAddress) {

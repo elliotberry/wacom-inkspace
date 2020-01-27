@@ -120,6 +120,10 @@ let NativeLinker = {
 			NativeNativeLinker.syncWithCloud(null);
 	},
 
+	disconnectCloud: function(message) {
+		NativeNativeLinker.disconnectCloud();
+	},
+
 	send: function(event) {},
 
 	get: function(remoteGlobalName) {

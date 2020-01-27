@@ -6,6 +6,8 @@ import {Line} from 'rc-progress';
 
 import * as actions from '../../actions/edit';
 
+import ReactUtils from '../../globals/ReactUtils';
+
 import DeviceModel from '../../../scripts/DeviceModel';
 import DrawingTool from '../../../scripts/DrawingTool';
 import utils from '../../../scripts/utils';
@@ -52,16 +54,35 @@ class EditNote extends Component {
 			startProgress: () => {
 				this.setState({progress: true, percent: 0});
 				global.updateState({noteProgress: true});
+
+				if (this.props.parent.state.progress)
+					this.props.parent.setState({percent: 0});
 			},
-			updateProgress: percent => this.setState({percent}),
+			updateProgress: percent => {
+				this.setState({percent});
+
+				if (this.props.parent.state.progress)
+					this.props.parent.setState({percent});
+			},
 			completeProgress: () => {
-				if (!this.state.progress) return;
+				if (!this.state.progress) {
+					if (this.props.parent.state.progress)
+						this.props.parent.setState({progress: false}, () => WILL.context2D.fitToScreen());
+
+					return;
+				}
 
 				this.setState({percent: 100});
+
+				if (this.props.parent.state.progress)
+					this.props.parent.setState({percent: 100});
 
 				setTimeout(() => {
 					this.setState({progress: false});
 					global.updateState({noteProgress: false, pasting: false});
+
+					if (this.props.parent.state.progress)
+						this.props.parent.setState({progress: false}, () => WILL.context2D.fitToScreen());
 				}, 200);
 			}
 		});
@@ -77,10 +98,7 @@ class EditNote extends Component {
 
 			WILL.setLayers(this.props.note.layers);
 
-			this.props.note.layers.forEach((layer, layerIndex) => {
-				if (!layer.strokes.length)
-					this.props.updatePreview(layerIndex);
-			});
+			this.props.generatePreviewsPane();
 		});
 	}
 
@@ -164,4 +182,4 @@ function mapDispatchToProps(dispatch) {
 	return bindActionCreators(actions, dispatch);
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(EditNote);
+export default connect(mapStateToProps, mapDispatchToProps)(ReactUtils.createParentTracker(EditNote));

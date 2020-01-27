@@ -28,7 +28,8 @@ class GLCanvas {
 		let deviceSize = this.deviceModel.getSurfaceSize(scaleFactor);
 		let deviceTransform = this.deviceModel.getSurfaceTransform(scaleFactor);
 
-		let squareSize = {width: Math.max(deviceSize.width, deviceSize.height), height: Math.max(deviceSize.width, deviceSize.height)};
+		let max = Math.max(deviceSize.width, deviceSize.height);
+		let squareSize = {width: max, height: max};
 
 		let t = Math.abs(deviceSize.width - deviceSize.height) / 2;
 		let tx = (deviceSize.width < deviceSize.height) ? t : 0;
@@ -38,7 +39,7 @@ class GLCanvas {
 		this.thumbLayer = this.canvas.createLayer(squareSize);
 		this.thumbTransform = Module.MatTools.multiply(squareTransform, deviceTransform);
 
-		this.strokeRenderer = new Module.StrokeRenderer(this.canvas, this.strokesLayer);
+		this.strokeRenderer = new Module.StrokeRenderer(this.canvas, this.deviceModel.size);
 	}
 
 	initThumbLayer() {
@@ -50,7 +51,7 @@ class GLCanvas {
 		this.thumbTransform = this.deviceModel.getSurfaceTransform(scaleFactor);
 	}
 
-	getContext(webGLContextAttributes) {
+	getContext(type, webGLContextAttributes) {
 		if (!this.context)
 			this.context = GLContext(1, 1, webGLContextAttributes);
 
@@ -151,6 +152,7 @@ class GLCanvas {
 			layer.forEach((stroke) => {
 				if (this.format == "LAYER") stroke.path.transform = this.thumbTransform;
 				this.strokeRenderer.draw(stroke);
+				this.strokeRenderer.blendUpdatedArea(this.strokesLayer);
 			});
 		});
 
@@ -189,14 +191,27 @@ class GLCanvas {
 			pixels = this.exportLayer.readPixels();
 		}
 
-		var image = new PNG(size);
+		this.unPremultiplyAlpha(pixels);
+
+		let image = new PNG(size);
 		image.data = Buffer.from(pixels);
 		return PNG.sync.write(image);
 	}
 
+	// postDivideAlpha
+	unPremultiplyAlpha(pixels) {
+		for (let i = 0; i < pixels.length; i += 4) {
+			let alpha = pixels[i+3];
+
+			pixels[i] = parseInt((pixels[i] * 255) / alpha);
+			pixels[i+1] = parseInt((pixels[i+1] * 255) / alpha);
+			pixels[i+2] = parseInt((pixels[i+2] * 255) / alpha);
+		}
+	}
+
 	toJPEG() {
-		var rawImageData = {width: this.surfaceSize.width, height: this.surfaceSize.height, data: Buffer.from(this.exportLayer.readPixels())};
-		var image = jpeg.encode(rawImageData, 100);
+		let rawImageData = {width: this.surfaceSize.width, height: this.surfaceSize.height, data: Buffer.from(this.exportLayer.readPixels())};
+		let image = jpeg.encode(rawImageData, 100);
 		return image.data;
 	}
 

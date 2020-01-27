@@ -1,7 +1,6 @@
 import React, {Component} from 'react';
 import {bindActionCreators} from 'redux';
 import {connect} from 'react-redux';
-import {withRouter} from 'react-router-dom';
 
 import {FormattedMessage, FormattedDate} from 'react-intl';
 import Tooltip from 'rc-tooltip';
@@ -26,16 +25,22 @@ class Preview extends Component {
 	}
 
 	render() {
-		let loaderStyle = this.props.combining ? null : {display: "none"};
+		let rotating = this.props.rotatedNotes.length && ContentManager.isSelected(this.props.rotatedNotes.first);
+		let editing = this.props.editedNotes.length && ContentManager.isSelected(this.props.editedNotes.first);
+
+		let loaderStyle = (this.props.combining || rotating || editing) ? null : {display: "none"};
 		let subDetailsStyle = this.props.combining ? {display: "none"} : null;
 
-		let className = "flex-wrapper";
+		let wrapperClasses = "flex-wrapper";
+		let leftMenuClasses = "menu pull-left";
+		let rightMenuClasses = "menu pull-right";
+
 		let details;
 
 		if (ContentManager.selected.length == 0)
-			className += " empty";
+			wrapperClasses += " empty";
 		else if (ContentManager.selected.length > 1) {
-			className += " multiple";
+			wrapperClasses += " multiple";
 
 			if (this.props.combining)
 				details = <FormattedMessage id={ 'preview.items.combining' } />;
@@ -43,12 +48,22 @@ class Preview extends Component {
 				details = <FormattedMessage id={ 'preview.items.selected' } values={{count: ContentManager.selected.length}} />;
 		}
 		else
-			className += " single";
+			wrapperClasses += " single";
+
+		if (rotating || editing) {
+			leftMenuClasses += " disabled";
+			rightMenuClasses += " disabled";
+
+			if (rotating)
+				details = <FormattedMessage id={ 'preview.rotate.in.progress' } />;
+			else if (editing)
+				details = <FormattedMessage id={ 'preview.edit.in.progress' } />;
+		}
 
 		return (
 			<div className="container">
 				<header>
-					<div className="menu pull-left">
+					<div className={leftMenuClasses}>
 						<ul>
 						{(() => {
 							if (ContentManager.selected.length == 1) {
@@ -71,12 +86,12 @@ class Preview extends Component {
 						</ul>
 					</div>
 
-					<div className="menu pull-right">
+					<div className={rightMenuClasses}>
 						<Menu />
 					</div>
 				</header>
 				<div className="content">
-					<div className={className}>
+					<div className={wrapperClasses}>
 						{(() => {
 							if (ContentManager.selected.length == 0) {
 								return (
@@ -85,13 +100,8 @@ class Preview extends Component {
 									</div>
 								);
 							}
-							else if (ContentManager.selected.length == 1) {
-								if (this.props.rotatedNotes.length)
-									return <LoadingIcon />
-								else
-									return <div className="background-image" style={{backgroundImage: `url("${ContentManager.getNote(ContentManager.selected.first).getPreviewSrc()}")`}} onDoubleClick={() => this.props.history.push('/creation')} onContextMenu={::this.onContextMenu}></div>
-							}
-							else {
+							// else if (ContentManager.selected.length > 1 || editing) {
+							else if (details) {
 								return (
 									<div className="preview-box">
 										<div className="background-image preview-image">
@@ -102,6 +112,9 @@ class Preview extends Component {
 									</div>
 								);
 							}
+							// ContentManager.selected.length == 1
+							else
+								return <div className="background-image" style={{backgroundImage: `url("${ContentManager.getNote(ContentManager.selected.first).getPreviewSrc()}")`}} onDoubleClick={this.props.editNote} onContextMenu={::this.onContextMenu}></div>
 						})()}
 					</div>
 				</div>
@@ -114,6 +127,7 @@ function mapStateToProps(state) {
 	return {
 		combining: state.LibraryReducer.combining,
 		rotatedNotes: state.LibraryReducer.rotatedNotes,
+		editedNotes: state.EditReducer.editedNotes,
 		lastModified: state.LibraryReducer.lastModified
 	};
 }
@@ -122,4 +136,4 @@ function mapDispatchToProps(dispatch) {
 	return bindActionCreators(actions, dispatch);
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(withRouter(Preview));
+export default connect(mapStateToProps, mapDispatchToProps)(Preview);

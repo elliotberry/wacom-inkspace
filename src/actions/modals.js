@@ -1,5 +1,7 @@
+import {push} from 'react-router-redux';
+
 import {addNotification} from './app';
-import {saveNote} from './edit';
+import {saveNote, closeNote} from './edit';
 import {filterByGroup, deleteNotes, refreshGroups} from './library';
 
 import * as Modals from '../constants/Modals'
@@ -276,6 +278,13 @@ function saveChanges() {
 	return (dispatch, getState) => {
 		dispatch(saveNote());
 		dispatch(closeDialog());
+		dispatch(closeNote());
+	}
+}
+
+function closeEditNote() {
+	return (dispatch, getState) => {
+		dispatch(closeNote());
 	}
 }
 
@@ -409,6 +418,7 @@ export {
 	removeGroup,
 	deleteGroup,
 	saveChanges,
+	closeEditNote,
 	notesDeleteConfirm,
 	openTagAdd,
 	getTagAddClassName,

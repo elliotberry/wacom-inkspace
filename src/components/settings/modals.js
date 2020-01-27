@@ -259,10 +259,7 @@ let settings = {
 			type: "CANCEL",
 			text: "saveChanges.dontSave",
 			onclose: function() {
-				if (AppManager.closing)
-					AppManager.confirmSaveNote();
-				else
-					global.redirect('/library');
+				this.props.closeEditNote();
 			}
 		}]
 	},

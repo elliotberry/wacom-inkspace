@@ -14,7 +14,7 @@ module.exports = {
 		steps: [
 			{
 				image: {src: images.whatsNewStep1},
-				waiting: {text: "whatsNew.progress"}
+				waiting: {text: "update.progress"}
 			}, {
 				image: {src: images.whatsNewStep2},
 				buttons: [{text: "btn.next"}]

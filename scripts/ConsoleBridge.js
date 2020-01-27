@@ -38,7 +38,7 @@ let ConsoleBridge = {
 				}]);
 			}
 			else {
-				if (error.message && error.message.startsWith("Network error: ws"))
+				if (error.message && (error.message.startsWith("WebSocket handshake") || error.message.startsWith("Network error: ws")))
 					console.info(error.message);
 				else
 					console.info(error);

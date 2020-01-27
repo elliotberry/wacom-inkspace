@@ -3,10 +3,10 @@
 .icon:hover svg {fill-opacity: 0.9;}
 .icon:hover svg circle:first-child {fill: rgba(0, 0, 0, 0.1);}
 
-.icon.disabled {pointer-events: none;}
-.icon:hover.disabled svg circle {fill: none;}
-.icon.disabled svg path {fill: rgba(0, 0, 0, 0.5);}
-.icon.disabled svg polygon {fill: rgba(0, 0, 0, 0.5);}
+.icon.disabled, .menu.disabled .icon {pointer-events: none;}
+.icon:hover.disabled svg circle, .menu.disabled .icon:hover svg circle {fill: none;}
+.icon.disabled svg path, .menu.disabled .icon svg path {fill: rgba(0, 0, 0, 0.5);}
+.icon.disabled svg polygon, .menu.disabled .icon svg polygon {fill: rgba(0, 0, 0, 0.5);}
 
 .icon:hover.button svg {fill-opacity: 1;}
 .icon:hover.button svg circle {fill: none;}

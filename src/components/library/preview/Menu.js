@@ -4,7 +4,6 @@ import {connect} from 'react-redux';
 
 import {FormattedMessage} from 'react-intl';
 import {Link, RouteHandler} from 'react-router';
-import {withRouter} from 'react-router-dom';
 import PropTypes from 'prop-types';
 import Tooltip from 'rc-tooltip';
 import className from 'classnames';
@@ -44,7 +43,7 @@ class Menu extends Component {
 
 	navigateToPage() {
 		if (ContentManager.selected.length == 1)
-			this.props.history.push('/creation');
+			this.props.editNote();
 	}
 
 	rotate() {
@@ -125,4 +124,4 @@ function mapDispatchToProps(dispatch) {
 	return bindActionCreators({...actions, openDialog}, dispatch);
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(withRouter(Menu));
+export default connect(mapStateToProps, mapDispatchToProps)(Menu);

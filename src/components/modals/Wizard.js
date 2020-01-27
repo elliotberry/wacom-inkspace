@@ -135,7 +135,7 @@ class Wizard extends Component {
 				this.config.discardXButton = true;
 			}
 
-			this.config.progress = "whatsNew.progress"
+			this.config.progress = "update.progress"
 
 			if (this.config.buttons) {
 				this.config.buttons.forEach((button, i) => {

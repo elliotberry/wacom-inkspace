@@ -61,12 +61,6 @@ function createContext (width, height, options) {
     return _getExtension.call(gl, extName)
   }
 
-  Object.defineProperty(gl, 'canvas', {
-    get: function () {
-      return null
-    }
-  })
-
   return gl || null
 }
 
